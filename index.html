@@ -438,8 +438,8 @@ function syncControls(){
   nums.forEach(([id,v])=>{const el=$('#'+id),num=$('#'+id+'Num');if(el)el.value=v;if(num&&document.activeElement!==num)num.value=v});
   [['frameColor','frameColor'],['panelColor','panelColor'],['textColor','textColor'],['accentColor','accentColor']].forEach(([id,k])=>{const el=$('#'+id),txt=$('#'+id+'Text');if(el)el.value=state[k];if(txt)txt.textContent=state[k].toUpperCase()});
   setSwitch('#pointSwitch',state.pointVisible);setSwitch('#underlineSwitch',state.underlineVisible);setSwitch('#logoSwitch',state.logoVisible);
-  $('[data-bg]').forEach(b=>b.classList.toggle('active',b.dataset.bg===state.background));
-  $('[data-point-style]').forEach(b=>b.classList.toggle('active',b.dataset.pointStyle===state.pointStyle));
+  $$('[data-bg]').forEach(b=>b.classList.toggle('active',b.dataset.bg===state.background));
+  $$('[data-point-style]').forEach(b=>b.classList.toggle('active',b.dataset.pointStyle===state.pointStyle));
   const pr=$('#pointRadiusField');if(pr)pr.hidden=state.pointStyle==='bracket';
   updateHistoryButtons();
 }
