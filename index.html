@@ -286,7 +286,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
 <div class="tuning-body">
 <div class="field"><div class="switch-row"><div class="field-label">表示</div><button aria-pressed="true" class="switch on" id="logoSwitch" type="button"></button></div></div>
 <div class="upload"><label class="upload-btn" for="logoInput"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line></svg><span>PNG / SVGを差し替え</span></label><input accept="image/png,image/svg+xml" class="hidden-input" id="logoInput" type="file"/></div>
-<div class="field" style="margin-top:14px"><span class="field-label">ロゴ幅</span><div class="range-row"><button class="slider-step slider-step-minus" type="button" data-step-key="logoWidth" data-step-dir="-1" aria-label="8px減らす"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button><input id="logoSize" max="320" min="112" step="1" type="range" value="192"/><button class="slider-step slider-step-plus" type="button" data-step-key="logoWidth" data-step-dir="1" aria-label="8px増やす"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><input class="number-input" id="logoSizeNum" max="320" min="112" step="1" type="number" value="192"/><button aria-label="初期値に戻す" class="param-reset" data-reset="logoWidth" title="初期値に戻す" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button></div></div>
+<div class="field" style="margin-top:14px"><span class="field-label">ロゴ幅</span><div class="range-row"><button class="slider-step slider-step-minus" type="button" data-step-key="logoWidth" data-step-dir="-1" aria-label="8px減らす"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button><input id="logoSize" max="320" min="112" step="1" type="range" value="196"/><button class="slider-step slider-step-plus" type="button" data-step-key="logoWidth" data-step-dir="1" aria-label="8px増やす"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><input class="number-input" id="logoSizeNum" max="320" min="112" step="1" type="number" value="196"/><button aria-label="初期値に戻す" class="param-reset" data-reset="logoWidth" title="初期値に戻す" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button></div></div>
 <button class="wide-btn" id="logoResetBtn" type="button">PATHOSロゴに戻す</button>
 </div></div>
 </section>
@@ -336,7 +336,7 @@ const defaults = {
   title:'タイトルを入力', subtitle:'補足を入力', pointText:'ポイントを入力', pointVisible:true,
   titleSize:80, subtitleSize:48, pointSize:40, pointStyle:'box', background:'square', pointRadius:32, underlineVisible:true,
   frameColor:'#ABED00', panelColor:'#F6F6F2', textColor:'#111111', accentColor:'#ABED00',
-  logoWidth:192, logoVisible:true, logoKind:'default', logoData:null
+  logoWidth:196, logoVisible:true, logoKind:'default', logoData:null
 };
 let state = {...defaults};
 let previewZoom = 1;
@@ -344,16 +344,115 @@ let lastFit = {title:80,subtitle:48,status:'ok'};
 let historyStack=[];
 let redoStack=[];
 let historyLock=false;
-const COLOR_PALETTE_KEY='pathos-thumbnail-color-palette-v1';
+const COLOR_PALETTE_KEY='pathos-thumbnail-color-palette-v2';
+const LEGACY_COLOR_PALETTE_KEY='pathos-thumbnail-color-palette-v1';
 let activeColorKey='accentColor';
 let pendingDeleteColor=null;
+
 function normalizeHex(v){return String(v||'').trim().toUpperCase()}
-function loadColorPalette(){try{const raw=JSON.parse(localStorage.getItem(COLOR_PALETTE_KEY)||'[]');return [...new Set((Array.isArray(raw)?raw:[]).map(normalizeHex).filter(v=>/^#[0-9A-F]{6}$/.test(v)))]}catch{return []}}
+function sanitizePalette(values){
+  const seen=new Set(), out=[];
+  for(const raw of Array.isArray(values)?values:[]){
+    const color=normalizeHex(raw);
+    if(!/^#[0-9A-F]{6}$/.test(color) || seen.has(color)) continue;
+    seen.add(color); out.push(color);
+  }
+  return out;
+}
+function readPaletteStorage(key){
+  try{return JSON.parse(localStorage.getItem(key)||'[]')}catch{return []}
+}
+function loadColorPalette(){
+  const current=readPaletteStorage(COLOR_PALETTE_KEY);
+  const legacy=readPaletteStorage(LEGACY_COLOR_PALETTE_KEY);
+  const clean=sanitizePalette(current.length?current:legacy);
+  try{
+    localStorage.setItem(COLOR_PALETTE_KEY,JSON.stringify(clean));
+    localStorage.removeItem(LEGACY_COLOR_PALETTE_KEY);
+  }catch{}
+  return clean;
+}
 let savedColors=loadColorPalette();
-function saveColorPalette(){try{localStorage.setItem(COLOR_PALETTE_KEY,JSON.stringify(savedColors))}catch{}}
-function setActiveColorKey(key){activeColorKey=key;$$('.color-control').forEach(el=>el.querySelector('.color-field')?.classList.toggle('is-active',el.dataset.colorKey===key))}
-function renderColorPalette(){const list=$('#colorPaletteList');if(!list)return;list.innerHTML='';const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';savedColors.forEach(color=>{const item=document.createElement('div');item.className='palette-item';const sw=document.createElement('button');sw.type='button';sw.className='palette-swatch';sw.style.background=color;sw.setAttribute('aria-label',color+'を適用');sw.addEventListener('click',()=>{const before=snapshotState();state[activeColorKey]=color;syncControls();reflow();if(!sameState(before,state))pushHistory(before)});const del=document.createElement('button');del.type='button';del.className='palette-delete';del.setAttribute('aria-label',color+'を削除');del.innerHTML=xsvg;del.addEventListener('pointerdown',e=>e.stopPropagation());del.addEventListener('click',e=>{e.stopPropagation();pendingDeleteColor=color;$('#deleteColorValue').textContent=color;$('#deleteColorModal').classList.remove('hidden')});item.append(sw,del);list.appendChild(item)})}
-function closeDeleteColorModal(){pendingDeleteColor=null;$('#deleteColorModal')?.classList.add('hidden')}
+function saveColorPalette(){
+  savedColors=sanitizePalette(savedColors);
+  try{localStorage.setItem(COLOR_PALETTE_KEY,JSON.stringify(savedColors))}catch{}
+}
+function setActiveColorKey(key){
+  activeColorKey=key;
+  $$('.color-control').forEach(el=>el.querySelector('.color-field')?.classList.toggle('is-active',el.dataset.colorKey===key));
+}
+function addSavedColor(rawColor){
+  const color=normalizeHex(rawColor);
+  if(!/^#[0-9A-F]{6}$/.test(color)) return false;
+  savedColors=sanitizePalette(savedColors);
+  if(savedColors.includes(color)){
+    saveColorPalette();
+    renderColorPalette();
+    toast('同じ色は追加できません');
+    return false;
+  }
+  savedColors.push(color);
+  saveColorPalette();
+  renderColorPalette();
+  toast('カラーを追加しました');
+  return true;
+}
+function renderColorPalette(){
+  const list=$('#colorPaletteList');
+  if(!list) return;
+  savedColors=sanitizePalette(savedColors);
+  saveColorPalette();
+  list.innerHTML='';
+  const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  savedColors.forEach(color=>{
+    const item=document.createElement('div');
+    item.className='palette-item';
+    item.dataset.color=color;
+
+    const sw=document.createElement('button');
+    sw.type='button';
+    sw.className='palette-swatch';
+    sw.dataset.applyColor=color;
+    sw.style.background=color;
+    sw.setAttribute('aria-label',color+'を適用');
+
+    const del=document.createElement('button');
+    del.type='button';
+    del.className='palette-delete';
+    del.dataset.deleteColor=color;
+    del.setAttribute('aria-label',color+'を削除');
+    del.innerHTML=xsvg;
+
+    item.append(sw,del);
+    list.appendChild(item);
+  });
+}
+function openDeleteColorModal(color){
+  const normalized=normalizeHex(color);
+  if(!savedColors.includes(normalized)) return;
+  pendingDeleteColor=normalized;
+  const value=$('#deleteColorValue');
+  if(value) value.textContent=normalized;
+  $('#deleteColorModal')?.classList.remove('hidden');
+}
+function closeDeleteColorModal(){
+  pendingDeleteColor=null;
+  $('#deleteColorModal')?.classList.add('hidden');
+}
+function deletePendingColor(){
+  if(!pendingDeleteColor) return false;
+  const target=normalizeHex(pendingDeleteColor);
+  const before=savedColors.length;
+  savedColors=sanitizePalette(savedColors).filter(color=>color!==target);
+  saveColorPalette();
+  renderColorPalette();
+  closeDeleteColorModal();
+  if(savedColors.length<before){
+    toast('カラーを削除しました');
+    return true;
+  }
+  return false;
+}
 
 const snapshotState=()=>JSON.parse(JSON.stringify(state));
 function sameState(a,b){return JSON.stringify(a)===JSON.stringify(b)}
@@ -546,11 +645,44 @@ $$('[data-bg]').forEach(b=>b.addEventListener('click',()=>{if(state.background==
   el.addEventListener('input',e=>{activate();if(!startSnap)startSnap=snapshotState();state[k]=e.target.value.toUpperCase();syncControls();reflow()});
   el.addEventListener('change',()=>{if(startSnap&&!sameState(startSnap,state))pushHistory(startSnap);startSnap=null});
 });
-$$('.color-control').forEach(el=>el.addEventListener('click',()=>setActiveColorKey(el.dataset.colorKey)));
-$('#colorPaletteAdd').addEventListener('click',()=>{$('#colorPalettePicker').value=state[activeColorKey]||'#ABED00';$('#colorPalettePicker').click()});
-$('#colorPalettePicker').addEventListener('change',e=>{const color=normalizeHex(e.target.value);if(savedColors.includes(color)){toast('同じ色は追加できません');return;}savedColors.push(color);saveColorPalette();renderColorPalette();toast('カラーを追加しました')});
-$$('[data-color-modal-close]').forEach(el=>el.addEventListener('click',closeDeleteColorModal));
-$('#deleteColorConfirm').addEventListener('click',()=>{if(!pendingDeleteColor)return;const color=pendingDeleteColor;savedColors=savedColors.filter(v=>v!==color);saveColorPalette();renderColorPalette();closeDeleteColorModal();toast('カラーを削除しました')});
+$('.color-control').forEach(el=>el.addEventListener('click',()=>setActiveColorKey(el.dataset.colorKey)));
+$('#colorPaletteAdd').addEventListener('click',()=>{
+  const picker=$('#colorPalettePicker');
+  picker.value=state[activeColorKey]||'#ABED00';
+  picker.dataset.lastCommitted='';
+  picker.click();
+});
+const palettePicker=$('#colorPalettePicker');
+const commitPalettePicker=e=>{
+  const color=normalizeHex(e.target.value);
+  if(e.target.dataset.lastCommitted===color) return;
+  e.target.dataset.lastCommitted=color;
+  addSavedColor(color);
+};
+palettePicker.addEventListener('input',commitPalettePicker);
+palettePicker.addEventListener('change',commitPalettePicker);
+
+$('#colorPaletteList').addEventListener('pointerdown',e=>{
+  if(e.target.closest('[data-delete-color]')) e.stopPropagation();
+});
+$('#colorPaletteList').addEventListener('click',e=>{
+  const deleteBtn=e.target.closest('[data-delete-color]');
+  if(deleteBtn){
+    e.preventDefault();e.stopPropagation();
+    openDeleteColorModal(deleteBtn.dataset.deleteColor);
+    return;
+  }
+  const swatch=e.target.closest('[data-apply-color]');
+  if(swatch){
+    const color=normalizeHex(swatch.dataset.applyColor);
+    const before=snapshotState();
+    state[activeColorKey]=color;
+    syncControls();reflow();
+    if(!sameState(before,state)) pushHistory(before);
+  }
+});
+$('[data-color-modal-close]').forEach(el=>el.addEventListener('click',closeDeleteColorModal));
+$('#deleteColorConfirm').addEventListener('click',deletePendingColor);
 $('#logoInput').addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;const before=snapshotState();const reader=new FileReader();reader.onload=()=>{state.logoKind='custom';state.logoData=reader.result;renderLogo();reflow();pushHistory(before);toast('ロゴを差し替えました')};reader.readAsDataURL(f)});
 $('#logoResetBtn').addEventListener('click',()=>{if(state.logoKind==='default'&&!state.logoData)return;const before=snapshotState();state.logoKind='default';state.logoData=null;renderLogo();reflow();pushHistory(before)});
 $('#zoomOutBtn').addEventListener('click',()=>{previewZoom=clamp(.6,previewZoom-.1,1.4);resizeStage()});$('#zoomInBtn').addEventListener('click',()=>{previewZoom=clamp(.6,previewZoom+.1,1.4);resizeStage()});
