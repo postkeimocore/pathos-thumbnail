@@ -72,7 +72,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .stage-bg-circle-fill,.stage-bg-circle-outline{position:absolute;left:50%;top:50%;border-radius:50%;transform:translate(-50%,-50%)}
 .stage-bg-circle-fill{width:1540px;height:1540px;background:#F6F6F2}
 .stage-bg-circle-outline{width:1640px;height:1640px;border:8px solid #F6F6F2}
-.stage-safe{position:absolute;inset:72px;z-index:2;pointer-events:none;--safe-x:32px;--safe-y:40px;--logo-gap:28px;--logo-reserve:0px}
+.stage-safe{position:absolute;inset:72px;z-index:2;pointer-events:none;--safe-x:32px;--safe-y:40px;--logo-gap:32px;--logo-reserve:0px}
 .copy-zone{position:absolute;left:var(--safe-x);right:var(--safe-x);top:var(--safe-y);bottom:calc(var(--safe-y) + var(--logo-reserve));min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;text-align:center}
 .copy-wrap{position:relative;width:100%;max-width:1280px}
 .copy-stack{display:flex;flex-direction:column;align-items:center;width:100%}
@@ -149,7 +149,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
 .color-field input[type=color]{width:26px;height:26px;border:0;padding:0;background:transparent;border-radius:8px;overflow:hidden}.color-field span{font:10px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ui-muted)}
 .upload{display:flex;flex-direction:column;gap:8px}.upload-btn{height:42px;border:1px dashed #C9CDD7;background:#fff;border-radius:12px;color:var(--ui-muted);font-size:11px;font-weight:650;display:flex;align-items:center;justify-content:center;gap:7px}.upload-btn svg{width:14px;height:14px;stroke:currentColor;flex:0 0 auto}.upload-btn:hover{border-color:#9DB75C;color:var(--ui-text)}
 .hidden-input{display:none}
-.action-stack{display:flex;flex-direction:column;gap:8px}.wide-btn{width:100%;min-height:46px;border-radius:13px;border:1px solid var(--ui-border);background:#fff;color:var(--ui-text);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}.wide-btn.primary{background:var(--ui-accent);border-color:var(--ui-accent);box-shadow:var(--shadow-cta)}
+.action-stack{display:flex;flex-direction:column;gap:8px}.wide-btn{width:100%;min-height:46px;border-radius:13px;border:1px solid var(--ui-border);background:#fff;color:var(--ui-text);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}.wide-btn.primary{background:var(--ui-accent);border-color:var(--ui-accent);box-shadow:var(--shadow-cta)}.wide-btn svg{width:14px;height:14px;flex:0 0 auto;stroke:currentColor}
 .small-note{font-size:10px;color:var(--ui-muted);line-height:1.6}
 
 .mobile-tabs{display:none}
@@ -257,8 +257,8 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
 <div class="tuning-group open">
 <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M8 4h8M12 4v16"></path><polyline points="8 8 12 4 16 8"></polyline><polyline points="8 16 12 20 16 16"></polyline></svg></span>文字サイズ</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span></button>
 <div class="tuning-body">
-<div class="field"><span class="field-label">見出し</span><div class="range-row"><input id="titleSize" max="132" min="48" type="range" value="82"/><button aria-label="初期値に戻す" class="param-reset" data-reset="titleSize" title="初期値に戻す" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button><input class="number-input" id="titleSizeNum" max="132" min="48" type="number" value="82"/></div></div>
-<div class="field"><span class="field-label">補足</span><div class="range-row"><input id="subtitleSize" max="76" min="28" type="range" value="48"/><button aria-label="初期値に戻す" class="param-reset" data-reset="subtitleSize" title="初期値に戻す" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button><input class="number-input" id="subtitleSizeNum" max="76" min="28" type="number" value="48"/></div></div>
+<div class="field"><span class="field-label">見出し</span><div class="range-row"><input id="titleSize" max="128" min="48" step="8" type="range" value="80"/><button aria-label="初期値に戻す" class="param-reset" data-reset="titleSize" title="初期値に戻す" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button><input class="number-input" id="titleSizeNum" max="128" min="48" step="8" type="number" value="80"/></div></div>
+<div class="field"><span class="field-label">補足</span><div class="range-row"><input id="subtitleSize" max="80" min="24" step="8" type="range" value="48"/><button aria-label="初期値に戻す" class="param-reset" data-reset="subtitleSize" title="初期値に戻す" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button><input class="number-input" id="subtitleSizeNum" max="80" min="24" step="8" type="number" value="48"/></div></div>
 </div>
 </div>
 <div class="tuning-group open">
@@ -267,8 +267,8 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
 <div class="field"><div class="switch-row"><div class="field-label">表示</div><button aria-pressed="true" class="switch on" id="pointSwitch" type="button"></button></div></div>
 <label class="field"><span class="field-label">テキスト</span><input class="text-input" id="pointInput" value="ポイントを入力"/></label>
 <div class="field"><span class="field-label">デザイン</span><div class="segment" style="--count:3"><button class="active" data-point-style="box" type="button">ボックス</button><button data-point-style="bracket" type="button">墨付き括弧</button><button data-point-style="speech" type="button">吹き出し</button></div></div>
-<div class="field"><span class="field-label">文字サイズ</span><div class="range-row"><input id="pointSize" max="56" min="24" type="range" value="42"/><button aria-label="初期値に戻す" class="param-reset" data-reset="pointSize" title="初期値に戻す" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button><input class="number-input" id="pointSizeNum" max="56" min="24" type="number" value="42"/></div></div>
-<div class="field" id="pointRadiusField"><span class="field-label">角丸</span><div class="range-row"><input id="pointRadius" max="48" min="0" type="range" value="32"/><button aria-label="初期値に戻す" class="param-reset" data-reset="pointRadius" title="初期値に戻す" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button><input class="number-input" id="pointRadiusNum" max="48" min="0" type="number" value="32"/></div></div>
+<div class="field"><span class="field-label">文字サイズ</span><div class="range-row"><input id="pointSize" max="56" min="24" step="8" type="range" value="40"/><button aria-label="初期値に戻す" class="param-reset" data-reset="pointSize" title="初期値に戻す" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button><input class="number-input" id="pointSizeNum" max="56" min="24" step="8" type="number" value="40"/></div></div>
+<div class="field" id="pointRadiusField"><span class="field-label">角丸</span><div class="range-row"><input id="pointRadius" max="48" min="0" step="8" type="range" value="32"/><button aria-label="初期値に戻す" class="param-reset" data-reset="pointRadius" title="初期値に戻す" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button><input class="number-input" id="pointRadiusNum" max="48" min="0" step="8" type="number" value="32"/></div></div>
 </div>
 </div>
 </section>
@@ -282,7 +282,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
 <div class="tuning-body">
 <div class="field"><div class="switch-row"><div class="field-label">表示</div><button aria-pressed="true" class="switch on" id="logoSwitch" type="button"></button></div></div>
 <div class="upload"><label class="upload-btn" for="logoInput"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line></svg><span>PNG / SVGを差し替え</span></label><input accept="image/png,image/svg+xml" class="hidden-input" id="logoInput" type="file"/></div>
-<div class="field" style="margin-top:14px"><span class="field-label">ロゴ幅</span><div class="range-row"><input id="logoSize" max="320" min="110" type="range" value="190"/><button aria-label="初期値に戻す" class="param-reset" data-reset="logoWidth" title="初期値に戻す" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button><input class="number-input" id="logoSizeNum" max="320" min="110" type="number" value="190"/></div></div>
+<div class="field" style="margin-top:14px"><span class="field-label">ロゴ幅</span><div class="range-row"><input id="logoSize" max="320" min="112" step="8" type="range" value="192"/><button aria-label="初期値に戻す" class="param-reset" data-reset="logoWidth" title="初期値に戻す" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button><input class="number-input" id="logoSizeNum" max="320" min="112" step="8" type="number" value="192"/></div></div>
 <button class="wide-btn" id="logoResetBtn" type="button">PATHOSロゴに戻す</button>
 </div>
 </div>
@@ -322,13 +322,13 @@ const DEFAULT_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5
 
 const defaults = {
   title:'タイトルを入力', subtitle:'補足を入力', pointText:'ポイントを入力', pointVisible:true,
-  titleSize:82, subtitleSize:48, pointSize:42, pointStyle:'box', background:'square', pointRadius:32, underlineVisible:true,
+  titleSize:80, subtitleSize:48, pointSize:40, pointStyle:'box', background:'square', pointRadius:32, underlineVisible:true,
   frameColor:'#ABED00', panelColor:'#F6F6F2', textColor:'#111111', accentColor:'#ABED00',
-  logoWidth:190, logoVisible:true, logoKind:'default', logoData:null
+  logoWidth:192, logoVisible:true, logoKind:'default', logoData:null
 };
 let state = {...defaults};
 let previewZoom = 1;
-let lastFit = {title:82,subtitle:48,status:'ok'};
+let lastFit = {title:80,subtitle:48,status:'ok'};
 let historyStack=[];
 let redoStack=[];
 let historyLock=false;
@@ -381,7 +381,7 @@ function renderLogo(){
 function updateOpticalLayout(){
   const safe=$('#stageSafe'), wrap=$('#logoWrap');
   const logoH=state.logoVisible ? (wrap.offsetHeight||0) : 0;
-  const reserve=state.logoVisible ? Math.max(0,logoH + 28) : 0;
+  const reserve=state.logoVisible ? Math.max(0,logoH + 32) : 0;
   safe.style.setProperty('--logo-reserve',reserve+'px');
 }
 function renderTextLines(){
@@ -391,7 +391,7 @@ function renderTextLines(){
 }
 function applyVisualState(){
   const stage=$('#stage'); stage.style.background=state.frameColor; stage.style.color=state.textColor;
-  $('#bgSquare').style.background=state.panelColor; $('#bgSquare').style.borderRadius='28px'; $('#bgSquare').hidden=state.background!=='square';
+  $('#bgSquare').style.background=state.panelColor; $('#bgSquare').style.borderRadius='32px'; $('#bgSquare').hidden=state.background!=='square';
   $('#bgCircleFill').style.background=state.panelColor; $('#bgCircleOutline').style.borderColor=state.panelColor; $('#bgCircleOutline').style.borderWidth='8px';
   $('#bgCircleFill').hidden=state.background!=='circle'; $('#bgCircleOutline').hidden=state.background!=='circle';
   $('.title-lines').style.color=state.textColor; $('.subtitle-lines').style.color=state.textColor;
@@ -482,7 +482,7 @@ function stageUnits(rect){const sr=$('#stage').getBoundingClientRect();const sc=
 function svgTextCenters(selector,fontSize,weight,letterSpacing,color){return $$(selector).map(el=>{const r=stageUnits(el.getBoundingClientRect());const text=esc(el.textContent.replace(/\u00a0/g,' '));return `<text x="${(r.x+r.w/2).toFixed(2)}" y="${(r.y+r.h/2).toFixed(2)}" text-anchor="middle" dominant-baseline="central" font-family="Noto Sans JP,Noto Sans CJK JP,Hiragino Sans,Yu Gothic,sans-serif" font-size="${fontSize}" font-weight="${weight}" letter-spacing="${letterSpacing}em" fill="${color}">${text}</text>`}).join('')}
 function logoDataForExport(){if(state.logoKind==='custom'&&state.logoData)return state.logoData;const colored=DEFAULT_LOGO_SVG.replaceAll('#ABED00',state.accentColor).replace('<svg ','<svg style="color:'+state.textColor+'" ');return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(colored)}
 function buildExportSvg(){
-  const bg=state.background==='square'?`<rect x="72" y="72" width="1456" height="756" rx="28" fill="${state.panelColor}"/>`:`<circle cx="800" cy="450" r="820" fill="none" stroke="${state.panelColor}" stroke-width="8"/><circle cx="800" cy="450" r="770" fill="${state.panelColor}"/>`;
+  const bg=state.background==='square'?`<rect x="72" y="72" width="1456" height="756" rx="32" fill="${state.panelColor}"/>`:`<circle cx="800" cy="450" r="820" fill="none" stroke="${state.panelColor}" stroke-width="8"/><circle cx="800" cy="450" r="770" fill="${state.panelColor}"/>`;
   const under=state.underlineVisible?$$('.title-underline').map(el=>{const r=stageUnits(el.getBoundingClientRect());return `<rect x="${r.x.toFixed(2)}" y="${r.y.toFixed(2)}" width="${r.w.toFixed(2)}" height="${r.h.toFixed(2)}" fill="${state.accentColor}"/>`}).join(''):'';
   let point=''; if(state.pointVisible){const r=stageUnits($('#pointLabel').getBoundingClientRect());const bgc=state.accentColor;const radius=Math.min(state.pointRadius,r.h/2);const cx=(r.x+r.w/2).toFixed(2),cy=(r.y+r.h/2).toFixed(2);const textAttrs=`x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="Noto Sans JP,Noto Sans CJK JP,Hiragino Sans,Yu Gothic,sans-serif" font-size="${state.pointSize}" font-weight="800" letter-spacing=".04em" fill="${state.textColor}"`;if(state.pointStyle==='bracket'){point=`<text ${textAttrs}>【${esc(state.pointText)}】</text>`;}else{const tail=state.pointStyle==='speech'?`<path d="M ${(r.x+r.w*.20).toFixed(2)} ${(r.y+r.h-1).toFixed(2)} L ${(r.x+r.w*.20+28).toFixed(2)} ${(r.y+r.h-1).toFixed(2)} L ${(r.x+r.w*.20).toFixed(2)} ${(r.y+r.h+22).toFixed(2)} Z" fill="${bgc}"/>`:'';point=`<g><rect x="${r.x.toFixed(2)}" y="${r.y.toFixed(2)}" width="${r.w.toFixed(2)}" height="${r.h.toFixed(2)}" rx="${radius.toFixed(2)}" fill="${bgc}"/>${tail}<text ${textAttrs}>${esc(state.pointText)}</text></g>`;}}
   let logo=''; if(state.logoVisible){const logoR=stageUnits($('#logoWrap').getBoundingClientRect());logo=`<image href="${logoDataForExport()}" x="${logoR.x.toFixed(2)}" y="${logoR.y.toFixed(2)}" width="${logoR.w.toFixed(2)}" height="${logoR.h.toFixed(2)}" preserveAspectRatio="xMidYMid meet"/>`;}
@@ -503,7 +503,7 @@ function bindTextHistory(id,key){
   el.addEventListener('blur',()=>{if(startSnap&&!sameState(startSnap,state))pushHistory(startSnap);startSnap=null});
 }
 bindTextHistory('titleInput','title');bindTextHistory('subtitleInput','subtitle');bindTextHistory('pointInput','pointText');
-bindRange('titleSize','titleSize',48,132);bindRange('subtitleSize','subtitleSize',28,76);bindRange('pointSize','pointSize',24,56);bindRange('pointRadius','pointRadius',0,48);bindRange('logoSize','logoWidth',110,320);
+bindRange('titleSize','titleSize',48,128);bindRange('subtitleSize','subtitleSize',24,80);bindRange('pointSize','pointSize',24,56);bindRange('pointRadius','pointRadius',0,48);bindRange('logoSize','logoWidth',112,320);
 function toggleState(key){const before=snapshotState();state[key]=!state[key];syncControls();reflow();pushHistory(before)}
 $('#pointSwitch').addEventListener('click',()=>toggleState('pointVisible'));
 $('#underlineSwitch').addEventListener('click',()=>toggleState('underlineVisible'));
