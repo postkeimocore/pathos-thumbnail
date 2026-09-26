@@ -49,7 +49,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .brand-sub{font-size:10px;color:var(--ui-muted);letter-spacing:.12em;margin-top:3px;text-transform:uppercase}
 .top-actions{display:flex;align-items:center;gap:8px}
 .ghost-btn,.primary-btn{border:1px solid var(--ui-border);border-radius:var(--r-pill);height:38px;padding:0 14px;background:rgba(255,255,255,.86);color:var(--ui-text);font-size:12px;font-weight:650;display:inline-flex;align-items:center;gap:7px;box-shadow:var(--shadow-soft);transition:.18s var(--easing)}
-.ghost-btn:hover{background:#fff;border-color:#DDE0E8}
+.ghost-btn:hover{background:#fff;border-color:#DDE0E8}.ghost-btn:disabled{opacity:.38;cursor:default;background:rgba(255,255,255,.72)}
 .primary-btn{background:var(--ui-accent);border-color:var(--ui-accent);color:#111;box-shadow:var(--shadow-cta)}
 .primary-btn:hover{filter:brightness(.97)}
 .primary-btn svg,.ghost-btn svg{width:14px;height:14px;flex:0 0 auto}
@@ -122,16 +122,16 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .field-label{font-size:11px;font-weight:650;color:var(--ui-text)}
 .param-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .param-actions{display:inline-flex;align-items:center;gap:6px}
-.param-reset{background:transparent;border:none;color:var(--ui-dim);font-size:12px;display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:4px 6px;border-radius:var(--r-sm);transition:all .2s var(--easing);-webkit-tap-highlight-color:transparent}
+.param-reset{width:28px;height:28px;background:transparent;border:none;color:var(--ui-dim);display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:var(--r-sm);transition:all .2s var(--easing);-webkit-tap-highlight-color:transparent}
 .param-reset:hover{color:var(--ui-accent-strong);background:rgba(171,237,0,.08)}
-.param-reset svg{width:12px;height:12px;stroke:currentColor}
+.param-reset svg{width:13px;height:13px;stroke:currentColor}
 
 .field-help{font-size:9.5px;color:var(--ui-dim);line-height:1.5}
-.value{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ui-muted);min-width:56px;text-align:right}
+
 .textarea,.text-input{width:100%;border:1px solid var(--ui-border);background:#fff;color:var(--ui-text);border-radius:12px;padding:10px 11px;font-size:13px;line-height:1.55;resize:vertical;min-height:44px;transition:border .15s var(--easing),box-shadow .15s var(--easing)}
 .textarea:focus,.text-input:focus{outline:none;border-color:#C5D995;box-shadow:0 0 0 3px rgba(171,237,0,.12)}
 .textarea{min-height:74px}
-.range-row{display:grid;grid-template-columns:1fr 58px;gap:10px;align-items:center}
+.range-row{display:grid;grid-template-columns:minmax(0,1fr) 28px 58px;gap:7px;align-items:center}
 input[type=range]{appearance:none;width:100%;height:28px;background:transparent}
 input[type=range]::-webkit-slider-runnable-track{height:4px;background:#DCE0E7;border-radius:999px}
 input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid #8DBE00;margin-top:-7px;box-shadow:0 1px 4px rgba(43,47,54,.18)}
@@ -167,7 +167,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
   .editor-left::after{content:"";position:absolute;left:0;right:0;bottom:0;height:12px;background:linear-gradient(to bottom,transparent 0%,rgba(249,248,252,.85) 100%);pointer-events:none}
   .mobile-preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:8px 2px 6px;background:var(--ui-bg)}
   .mobile-save-btn{height:34px;padding:0 12px;border:1px solid var(--ui-accent);border-radius:var(--r-pill);background:var(--ui-accent);color:#111;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--shadow-cta);-webkit-tap-highlight-color:transparent}
-  .mobile-save-btn svg{width:13px;height:13px;flex:0 0 auto}
+  .mobile-save-btn svg{width:13px;height:13px;flex:0 0 auto}.mobile-toolbar-actions{display:flex;align-items:center;gap:6px}.mobile-history{width:32px;height:32px;border:1px solid var(--ui-border);border-radius:50%;background:#fff;color:var(--ui-muted);display:grid;place-items:center;box-shadow:var(--shadow-soft)}.mobile-history svg{width:14px;height:14px}.mobile-history:disabled{opacity:.35}.mobile-history:active{transform:translateY(1px)}
   .mobile-save-btn:active{transform:translateY(1px)}
   .preview-card{padding:8px;border-radius:18px}.preview-head{display:none}.stage-viewport{border-radius:12px}
   .status-row{display:none}
@@ -201,7 +201,9 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
       <div class="brand-copy"><div class="brand-title">PATHOS Thumbnail Studio</div></div>
     </div>
     <div class="top-actions">
-      <button class="ghost-btn" id="resetBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 3 11 8 11"/><path d="M5.1 17a9 9 0 1 0 .5-10.3L3 9"/></svg><span>リセット</span></button>
+      <button class="ghost-btn" id="undoBtn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg><span>戻す</span></button>
+      <button class="ghost-btn" id="redoBtn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 15-6.7L21 13"/></svg><span>次へ</span></button>
+      <button class="ghost-btn" id="resetBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg><span>リセット</span></button>
       <button class="primary-btn" id="exportTopBtn" aria-label="保存"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>保存</span></button>
     </div>
   </header>
@@ -213,10 +215,11 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
           <span class="mobile-brand-mark"><svg viewBox="0 0 142.12 134.81" aria-hidden="true"><path fill="#111" d="M135.86,134.81h-15.67V28.66L16.16,66.52v68.29H6.27c-3.46,0-6.27-2.81-6.27-6.27V53.44c0-2.64,1.65-4.99,4.13-5.89L133.71.38c4.09-1.49,8.41,1.54,8.41,5.89v122.26c0,3.46-2.81,6.27-6.27,6.27Z"/><polygon fill="#ABED00" points="16.16 58.65 38.52 60.05 38.52 126 16.16 134.81 16.16 58.65"/></svg></span>
           <span class="mobile-brand-title">PATHOS Thumbnail Studio</span>
         </div>
-        <button class="mobile-save-btn" id="exportMobileBtn" type="button" aria-label="保存">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>保存</span>
-        </button>
+        <div class="mobile-toolbar-actions">
+          <button class="mobile-history" id="undoMobileBtn" type="button" aria-label="戻す" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg></button>
+          <button class="mobile-history" id="redoMobileBtn" type="button" aria-label="次へ" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 15-6.7L21 13"/></svg></button>
+          <button class="mobile-save-btn" id="exportMobileBtn" type="button" aria-label="保存"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>保存</span></button>
+        </div>
       </div>
       <div class="preview-card">
         <div class="preview-head"><div class="preview-title">プレビュー</div><div class="preview-meta"><span class="preview-dot"></span><span>1600 × 900</span></div></div>
@@ -247,68 +250,63 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
         <div class="panel-scroll">
           <section class="tab-panel active" data-panel="text">
             <div class="tuning-group open">
-              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></span>見出し・補足</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></span>見出し・補足</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
               <div class="tuning-body">
-                <label class="field"><span class="param-head"><span class="field-label">見出し</span><button class="param-reset" type="button" data-reset="title" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button></span><textarea class="textarea" id="titleInput">展示会のリード獲得とは？</textarea></label>
-                <label class="field"><span class="param-head"><span class="field-label">補足</span><button class="param-reset" type="button" data-reset="subtitle" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button></span><textarea class="textarea" id="subtitleInput">成果につながる考え方・KPI・改善方法</textarea></label>
+                <label class="field"><span class="field-label">見出し</span><textarea class="textarea" id="titleInput">タイトルを入力</textarea></label>
+                <div class="field"><div class="switch-row"><div class="field-label">強調線</div><button class="switch on" id="underlineSwitch" aria-pressed="true"></button></div></div>
+                <label class="field"><span class="field-label">補足</span><textarea class="textarea" id="subtitleInput">補足を入力</textarea></label>
               </div>
             </div>
             <div class="tuning-group open">
-              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8M12 4v16"/><polyline points="8 8 12 4 16 8"/><polyline points="8 16 12 20 16 16"/></svg></span>文字サイズ</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8M12 4v16"/><polyline points="8 8 12 4 16 8"/><polyline points="8 16 12 20 16 16"/></svg></span>文字サイズ</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
               <div class="tuning-body">
-                <div class="field"><div class="field-row"><span class="field-label">見出し</span><span class="param-actions"><span class="value" id="titleSizeValue">82 px</span><button class="param-reset" type="button" data-reset="titleSize" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button></span></div><div class="range-row"><input id="titleSize" type="range" min="48" max="132" value="82"><input class="number-input" id="titleSizeNum" type="number" min="48" max="132" value="82"></div></div>
-                <div class="field"><div class="field-row"><span class="field-label">補足</span><span class="param-actions"><span class="value" id="subtitleSizeValue">48 px</span><button class="param-reset" type="button" data-reset="subtitleSize" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button></span></div><div class="range-row"><input id="subtitleSize" type="range" min="28" max="76" value="48"><input class="number-input" id="subtitleSizeNum" type="number" min="28" max="76" value="48"></div></div>
-                <div class="field"><div class="switch-row"><div class="field-label">強調線</div><span class="param-actions"><button class="param-reset" type="button" data-reset="underlineVisible" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button><button class="switch on" id="underlineSwitch" aria-pressed="true"></button></span></div></div>
+                <div class="field"><span class="field-label">見出し</span><div class="range-row"><input id="titleSize" type="range" min="48" max="132" value="82"><button class="param-reset" type="button" data-reset="titleSize" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button><input class="number-input" id="titleSizeNum" type="number" min="48" max="132" value="82"></div></div>
+                <div class="field"><span class="field-label">補足</span><div class="range-row"><input id="subtitleSize" type="range" min="28" max="76" value="48"><button class="param-reset" type="button" data-reset="subtitleSize" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button><input class="number-input" id="subtitleSizeNum" type="number" min="28" max="76" value="48"></div></div>
               </div>
             </div>
             <div class="tuning-group open">
-              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="6"/><path d="M8 12h8"/></svg></span>ポイント枠</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="6"/><path d="M8 12h8"/></svg></span>ポイント枠</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
               <div class="tuning-body">
-                <div class="field"><div class="switch-row"><div class="field-label">表示</div><span class="param-actions"><button class="param-reset" type="button" data-reset="pointVisible" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button><button class="switch on" id="pointSwitch" aria-pressed="true"></button></span></div></div>
-                <label class="field"><span class="param-head"><span class="field-label">テキスト</span><button class="param-reset" type="button" data-reset="pointText" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button></span><input class="text-input" id="pointInput" value="ポイント解説"></label>
-                <div class="field"><div class="param-head"><div class="field-label">デザイン</div><button class="param-reset" type="button" data-reset="pointStyle" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button></div><div class="segment" style="--count:3"><button class="active" data-point-style="box">ボックス</button><button data-point-style="bracket">墨付き括弧</button><button data-point-style="speech">吹き出し</button></div></div>
-                <div class="field"><div class="field-row"><span class="field-label">文字サイズ</span><span class="param-actions"><span class="value" id="pointSizeValue">42 px</span><button class="param-reset" type="button" data-reset="pointSize" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button></span></div><div class="range-row"><input id="pointSize" type="range" min="24" max="56" value="42"><input class="number-input" id="pointSizeNum" type="number" min="24" max="56" value="42"></div></div>
-                <div class="field" id="pointRadiusField"><div class="field-row"><span class="field-label">角丸</span><span class="param-actions"><span class="value" id="pointRadiusValue">32 px</span><button class="param-reset" type="button" data-reset="pointRadius" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button></span></div><div class="range-row"><input id="pointRadius" type="range" min="0" max="48" value="32"><input class="number-input" id="pointRadiusNum" type="number" min="0" max="48" value="32"></div></div>
+                <div class="field"><div class="switch-row"><div class="field-label">表示</div><button class="switch on" id="pointSwitch" aria-pressed="true"></button></div></div>
+                <label class="field"><span class="field-label">テキスト</span><input class="text-input" id="pointInput" value="ポイントを入力"></label>
+                <div class="field"><span class="field-label">デザイン</span><div class="segment" style="--count:3"><button class="active" data-point-style="box">ボックス</button><button data-point-style="bracket">墨付き括弧</button><button data-point-style="speech">吹き出し</button></div></div>
+                <div class="field"><span class="field-label">文字サイズ</span><div class="range-row"><input id="pointSize" type="range" min="24" max="56" value="42"><button class="param-reset" type="button" data-reset="pointSize" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button><input class="number-input" id="pointSizeNum" type="number" min="24" max="56" value="42"></div></div>
+                <div class="field" id="pointRadiusField"><span class="field-label">角丸</span><div class="range-row"><input id="pointRadius" type="range" min="0" max="48" value="32"><button class="param-reset" type="button" data-reset="pointRadius" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button><input class="number-input" id="pointRadiusNum" type="number" min="0" max="48" value="32"></div></div>
               </div>
             </div>
           </section>
-
           <section class="tab-panel" data-panel="layout">
             <div class="tuning-group open">
-              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="12" cy="12" r="5"/></svg></span>背景パターン</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
-              <div class="tuning-body">
-                <div class="field"><div class="param-head"><span class="field-label">パターン</span><button class="param-reset" type="button" data-reset="background" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button></div><div class="segment" style="--count:2"><button class="active" data-bg="square">四角形</button><button data-bg="circle">円形</button></div></div>
-              </div>
-            </div>
-          </section>
-
-          <section class="tab-panel" data-panel="style">
-            <div class="tuning-group open">
-              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor" stroke="none" opacity=".22"/></svg></span>カラー</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
-              <div class="tuning-body"><div class="color-grid">
-                <label class="field"><span class="param-head"><span class="field-label">外枠</span><button class="param-reset" type="button" data-reset="frameColor" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button></span><div class="color-field"><input type="color" id="frameColor" value="#ABED00"><span id="frameColorText">#ABED00</span></div></label>
-                <label class="field"><span class="param-head"><span class="field-label">メインエリア</span><button class="param-reset" type="button" data-reset="panelColor" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button></span><div class="color-field"><input type="color" id="panelColor" value="#F6F6F2"><span id="panelColorText">#F6F6F2</span></div></label>
-                <label class="field"><span class="param-head"><span class="field-label">テキスト</span><button class="param-reset" type="button" data-reset="textColor" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button></span><div class="color-field"><input type="color" id="textColor" value="#111111"><span id="textColorText">#111111</span></div></label>
-                <label class="field"><span class="param-head"><span class="field-label">強調</span><button class="param-reset" type="button" data-reset="accentColor" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button></span><div class="color-field"><input type="color" id="accentColor" value="#ABED00"><span id="accentColorText">#ABED00</span></div></label>
-              </div></div>
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="12" cy="12" r="5"/></svg></span>背景パターン</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <div class="tuning-body"><div class="field"><span class="field-label">パターン</span><div class="segment" style="--count:2"><button class="active" data-bg="square">四角形</button><button data-bg="circle">円形</button></div></div></div>
             </div>
             <div class="tuning-group open">
-              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18V7l8-3 8 3v11"/><path d="M8 20V9l4-1.5V20"/></svg></span>ロゴ</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 18V7l8-3 8 3v11"/><path d="M8 20V9l4-1.5V20"/></svg></span>ロゴ</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
               <div class="tuning-body">
-                <div class="field"><div class="switch-row"><div class="field-label">表示</div><span class="param-actions"><button class="param-reset" type="button" data-reset="logoVisible" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button><button class="switch on" id="logoSwitch" aria-pressed="true"></button></span></div></div>
-                <div class="upload"><label class="upload-btn" for="logoInput"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>PNG / SVGを差し替え</span></label><input class="hidden-input" id="logoInput" type="file" accept="image/png,image/svg+xml"></div>
-                <div class="field" style="margin-top:14px"><div class="field-row"><span class="field-label">ロゴ幅</span><span class="param-actions"><span class="value" id="logoSizeValue">190 px</span><button class="param-reset" type="button" data-reset="logoWidth" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button></span></div><div class="range-row"><input id="logoSize" type="range" min="110" max="320" value="190"><input class="number-input" id="logoSizeNum" type="number" min="110" max="320" value="190"></div></div>
+                <div class="field"><div class="switch-row"><div class="field-label">表示</div><button class="switch on" id="logoSwitch" aria-pressed="true"></button></div></div>
+                <div class="upload"><label class="upload-btn" for="logoInput"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>PNG / SVGを差し替え</span></label><input class="hidden-input" id="logoInput" type="file" accept="image/png,image/svg+xml"></div>
+                <div class="field" style="margin-top:14px"><span class="field-label">ロゴ幅</span><div class="range-row"><input id="logoSize" type="range" min="110" max="320" value="190"><button class="param-reset" type="button" data-reset="logoWidth" aria-label="初期値に戻す" title="初期値に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button><input class="number-input" id="logoSizeNum" type="number" min="110" max="320" value="190"></div></div>
                 <button class="wide-btn" id="logoResetBtn">PATHOSロゴに戻す</button>
               </div>
             </div>
           </section>
-
+          <section class="tab-panel" data-panel="style">
+            <div class="tuning-group open">
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor" stroke="none" opacity=".22"/></svg></span>カラー</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <div class="tuning-body"><div class="color-grid">
+                <label class="field"><span class="field-label">外枠</span><div class="color-field"><input type="color" id="frameColor" value="#ABED00"><span id="frameColorText">#ABED00</span></div></label>
+                <label class="field"><span class="field-label">メインエリア</span><div class="color-field"><input type="color" id="panelColor" value="#F6F6F2"><span id="panelColorText">#F6F6F2</span></div></label>
+                <label class="field"><span class="field-label">テキスト</span><div class="color-field"><input type="color" id="textColor" value="#111111"><span id="textColorText">#111111</span></div></label>
+                <label class="field"><span class="field-label">強調</span><div class="color-field"><input type="color" id="accentColor" value="#ABED00"><span id="accentColorText">#ABED00</span></div></label>
+              </div></div>
+            </div>
+          </section>
           <section class="tab-panel" data-panel="export">
             <div class="tuning-group open">
-              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>保存</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>保存</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
               <div class="tuning-body"><div class="action-stack"><button class="wide-btn primary" id="exportBtn">PNGを書き出す</button><button class="wide-btn" id="copySettingsBtn">設定JSONをコピー</button></div></div>
             </div>
-            <div class="tuning-group"><button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 3 11 8 11"/><path d="M5.1 17a9 9 0 1 0 .5-10.3L3 9"/></svg></span>初期化</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button><div class="tuning-body"><button class="wide-btn" id="resetPanelBtn">すべて初期値に戻す</button></div></div>
+            <button class="wide-btn" id="resetPanelBtn" style="margin-top:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg><span>すべて初期値に戻す</span></button>
           </section>
         </div>        </div>
       </div>
@@ -328,7 +326,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
 const DEFAULT_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560.87 134.81" role="img" aria-label="PATHOS"><path d="M135.86,134.81h-15.67V28.66L16.16,66.52v68.29H6.27c-3.46,0-6.27-2.81-6.27-6.27V53.44c0-2.64,1.65-4.99,4.13-5.89L133.71.38c4.09-1.49,8.41,1.54,8.41,5.89v122.26c0,3.46-2.81,6.27-6.27,6.27Z"/><polygon fill="#ABED00" points="16.16 58.65 38.52 60.05 38.52 126 16.16 134.81 16.16 58.65"/><path d="M213.54,49.19h-23.35v60.42h7.94v-21.22h14.31c12.43,0,24.96-6.15,24.96-20.05,0-11.64-9.37-19.16-23.86-19.16ZM229.46,68.59v.16c0,7.43-6.58,12.22-16.77,12.22h-14.56v-24.37h15.07c4.89,0,16.26,1.17,16.26,11.98Z"/><polygon points="269.38 48.79 239.97 109.62 248.48 109.62 272.52 59.27 296.49 109.62 305.25 109.62 275.84 48.79 269.38 48.79"/><polygon points="306.46 56.62 327.2 56.62 327.2 109.62 335.14 109.62 335.14 56.62 355.88 56.62 355.88 49.19 306.46 49.19 306.46 56.62"/><polygon points="413.38 75.53 378.82 75.53 378.82 49.19 370.88 49.19 370.88 109.62 378.82 109.62 378.82 82.95 413.38 82.95 413.38 109.62 421.32 109.62 421.32 49.19 413.38 49.19 413.38 75.53"/><path d="M501.29,78.48c-.39-17.31-13.83-30.26-31.58-30.26s-31.76,13.7-31.76,31.35,13.58,31.03,31.59,31.03,31.36-13.31,31.76-30.44l.07-.83-.06-.84h-.01ZM493.19,79.41v.16c0,13.5-10.1,23.69-23.48,23.69s-23.66-10.48-23.66-24.01,10.1-23.68,23.48-23.68,23.66,10.48,23.66,23.85Z"/><path d="M539.9,75.57c-14.72-2.88-15.92-6.56-15.92-10.87,0-5.2,5.37-8.97,12.78-8.97,6.47,0,11.6,1.86,16.64,6.02l1.34,1.11,5.11-6.07-1.46-1.12c-6.73-5.17-12.95-7.27-21.47-7.27-11.91,0-20.89,7.19-20.89,16.88s6.43,14.83,21.49,17.74c14.24,2.74,15.4,6.33,15.4,10.55,0,5.62-5.46,9.54-13.29,9.54s-13.63-2.25-20.17-8.01l-1.3-1.14-5.28,5.79,1.38,1.18c7.71,6.59,15.46,9.53,25.11,9.53,12.65,0,21.48-7.11,21.48-17.45,0-9.22-6.47-14.59-20.97-17.42Z"/></svg>`;
 
 const defaults = {
-  title:'展示会のリード獲得とは？', subtitle:'成果につながる考え方・KPI・改善方法', pointText:'ポイント解説', pointVisible:true,
+  title:'タイトルを入力', subtitle:'補足を入力', pointText:'ポイントを入力', pointVisible:true,
   titleSize:82, subtitleSize:48, pointSize:42, pointStyle:'box', background:'square', pointRadius:32, underlineVisible:true,
   frameColor:'#ABED00', panelColor:'#F6F6F2', textColor:'#111111', accentColor:'#ABED00',
   logoWidth:190, logoVisible:true, logoKind:'default', logoData:null
@@ -336,6 +334,17 @@ const defaults = {
 let state = {...defaults};
 let previewZoom = 1;
 let lastFit = {title:82,subtitle:48,status:'ok'};
+let historyStack=[];
+let redoStack=[];
+let historyLock=false;
+const snapshotState=()=>JSON.parse(JSON.stringify(state));
+function sameState(a,b){return JSON.stringify(a)===JSON.stringify(b)}
+function pushHistory(snapshot=snapshotState()){if(historyLock)return;const last=historyStack[historyStack.length-1];if(last&&sameState(last,snapshot))return;historyStack.push(snapshot);if(historyStack.length>50)historyStack.shift();redoStack=[];updateHistoryButtons()}
+function updateHistoryButtons(){['undoBtn','undoMobileBtn'].forEach(id=>{const el=$('#'+id);if(el)el.disabled=historyStack.length===0});['redoBtn','redoMobileBtn'].forEach(id=>{const el=$('#'+id);if(el)el.disabled=redoStack.length===0})}
+function restoreSnapshot(snapshot){historyLock=true;state={...defaults,...JSON.parse(JSON.stringify(snapshot))};syncControls();renderLogo();reflow();historyLock=false;updateHistoryButtons()}
+function undo(){if(!historyStack.length)return;redoStack.push(snapshotState());restoreSnapshot(historyStack.pop())}
+function redo(){if(!redoStack.length)return;historyStack.push(snapshotState());restoreSnapshot(redoStack.pop())}
+
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const clamp=(min,v,max)=>Math.max(min,Math.min(max,v));
@@ -373,7 +382,7 @@ function updateOpticalLayout(){
 function renderTextLines(){
   $('#titleLines').innerHTML=lines(state.title).map(x=>`<span class="title-line"><span class="title-text">${esc(x)||'&nbsp;'}</span><span class="title-underline"></span></span>`).join('');
   $('#subtitleLines').innerHTML=lines(state.subtitle).map(x=>`<span class="subtitle-line"><span class="subtitle-text">${esc(x)||'&nbsp;'}</span></span>`).join('');
-  $('#pointText').textContent=state.pointText||'ポイント解説'; const pointEl=$('#pointLabel'); pointEl.hidden=!state.pointVisible; pointEl.dataset.style=state.pointStyle;
+  $('#pointText').textContent=state.pointText; const pointEl=$('#pointLabel'); pointEl.hidden=!state.pointVisible; pointEl.dataset.style=state.pointStyle;
 }
 function applyVisualState(){
   const stage=$('#stage'); stage.style.background=state.frameColor; stage.style.color=state.textColor;
@@ -382,19 +391,19 @@ function applyVisualState(){
   $('#bgCircleFill').hidden=state.background!=='circle'; $('#bgCircleOutline').hidden=state.background!=='circle';
   $('.title-lines').style.color=state.textColor; $('.subtitle-lines').style.color=state.textColor;
   document.documentElement.style.setProperty('--ui-accent',state.accentColor);
-  $('.title-underline').forEach(el=>{el.style.background=state.accentColor;el.hidden=!state.underlineVisible});
+  $$$('.title-underline').forEach(el=>{el.style.background=state.accentColor;el.hidden=!state.underlineVisible});
   const point=$('#pointLabel'); point.style.background=state.accentColor; point.style.color=state.textColor; point.style.setProperty('--point-radius',state.pointRadius+'px'); point.dataset.style=state.pointStyle;
   renderLogo();
 }
 function setMetricVars(m){
   const root=$('#stage');
   root.style.setProperty('--underline-gap',m.underlineGap+'px');root.style.setProperty('--underline-height',m.underlineHeight+'px');root.style.setProperty('--title-subtitle-gap',m.titleSubtitleGap+'px');root.style.setProperty('--point-gap',m.pointGap+'px');root.style.setProperty('--point-height',m.pointHeight+'px');root.style.setProperty('--point-size',m.pointSize+'px');root.style.setProperty('--point-pad-x',m.pointPadX+'px');root.style.setProperty('--title-line-gap',m.titleLineGap+'px');root.style.setProperty('--subtitle-line-gap',m.subtitleLineGap+'px');
-  $('.title-underline').forEach(el=>{el.style.background=state.accentColor;el.hidden=!state.underlineVisible});
+  $$$('.title-underline').forEach(el=>{el.style.background=state.accentColor;el.hidden=!state.underlineVisible});
 }
 function setFontSizes(t,s){ $('.title-lines').style.fontSize=t+'px'; $('.subtitle-lines').style.fontSize=s+'px'; }
 function isOverflowing(){
-  const titleOverflow=$('.title-text').some(el=>el.scrollWidth>$('#copyWrap').clientWidth+1);
-  const subOverflow=$('.subtitle-text').some(el=>el.scrollWidth>$('#copyWrap').clientWidth+1);
+  const titleOverflow=$$$('.title-text').some(el=>el.scrollWidth>$('#copyWrap').clientWidth+1);
+  const subOverflow=$$$('.subtitle-text').some(el=>el.scrollWidth>$('#copyWrap').clientWidth+1);
   return {overflow:titleOverflow||subOverflow,titleOverflow,subOverflow,vertical:false};
 }
 function reflow(){
@@ -423,44 +432,28 @@ function resizeStage(){
   $('#zoomValue').textContent=Math.round(previewZoom*100)+'%';
 }
 function syncControls(){
-  const map=[['titleInput','title'],['subtitleInput','subtitle'],['pointInput','pointText']]; map.forEach(([id,k])=>{$('#'+id).value=state[k]});
-  const nums=[['titleSize',state.titleSize,'titleSizeValue',' px'],['subtitleSize',state.subtitleSize,'subtitleSizeValue',' px'],['pointSize',state.pointSize,'pointSizeValue',' px'],['pointRadius',state.pointRadius,'pointRadiusValue',' px'],['logoSize',state.logoWidth,'logoSizeValue',' px']];
-  nums.forEach(([id,v,valId,suf])=>{const el=$('#'+id),num=$('#'+id+'Num'); if(el)el.value=v;if(num)num.value=v;if($('#'+valId))$('#'+valId).textContent=v+suf});
-  [['frameColor','frameColor'],['panelColor','panelColor'],['textColor','textColor'],['accentColor','accentColor']].forEach(([id,k])=>{$('#'+id).value=state[k];$('#'+id+'Text').textContent=state[k].toUpperCase()});
+  const map=[['titleInput','title'],['subtitleInput','subtitle'],['pointInput','pointText']];
+  map.forEach(([id,k])=>{const el=$('#'+id);if(el&&document.activeElement!==el)el.value=state[k]});
+  const nums=[['titleSize',state.titleSize],['subtitleSize',state.subtitleSize],['pointSize',state.pointSize],['pointRadius',state.pointRadius],['logoSize',state.logoWidth]];
+  nums.forEach(([id,v])=>{const el=$('#'+id),num=$('#'+id+'Num');if(el)el.value=v;if(num&&document.activeElement!==num)num.value=v});
+  [['frameColor','frameColor'],['panelColor','panelColor'],['textColor','textColor'],['accentColor','accentColor']].forEach(([id,k])=>{const el=$('#'+id),txt=$('#'+id+'Text');if(el)el.value=state[k];if(txt)txt.textContent=state[k].toUpperCase()});
   setSwitch('#pointSwitch',state.pointVisible);setSwitch('#underlineSwitch',state.underlineVisible);setSwitch('#logoSwitch',state.logoVisible);
-  $('[data-bg]').forEach(b=>b.classList.toggle('active',b.dataset.bg===state.background));$('[data-point-style]').forEach(b=>b.classList.toggle('active',b.dataset.pointStyle===state.pointStyle));$('#pointRadiusField').hidden=state.pointStyle==='bracket';
+  $('[data-bg]').forEach(b=>b.classList.toggle('active',b.dataset.bg===state.background));
+  $('[data-point-style]').forEach(b=>b.classList.toggle('active',b.dataset.pointStyle===state.pointStyle));
+  const pr=$('#pointRadiusField');if(pr)pr.hidden=state.pointStyle==='bracket';
+  updateHistoryButtons();
 }
 function setSwitch(sel,on){const el=$(sel);el.classList.toggle('on',!!on);el.setAttribute('aria-pressed',String(!!on));}
-function bindRange(id,key,min,max){const r=$('#'+id),n=$('#'+id+'Num'); const update=v=>{state[key]=clamp(min,Number(v)||min,max);syncControls();reflow()};r.addEventListener('input',e=>update(e.target.value));n.addEventListener('change',e=>update(e.target.value));}
-function mobileStickyHeight(){return innerWidth<900 ? ($('#editorLeft')?.getBoundingClientRect().height||0) : 0}
-function updateStickyMetrics(){document.documentElement.style.setProperty('--mobile-sticky-h',Math.ceil(mobileStickyHeight())+'px')}
-function switchTab(name){
-  $$('.phase-tab,.mobile-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
-  $$('.tab-panel').forEach(p=>p.classList.toggle('active',p.dataset.panel===name));
-  if(innerWidth<900){
-    requestAnimationFrame(()=>{
-      updateStickyMetrics();
-      const right=$('.editor-right'); if(!right)return;
-      const sticky=mobileStickyHeight(); const rect=right.getBoundingClientRect();
-      if(rect.top<sticky-2 || rect.top>sticky+40){
-        window.scrollTo({top:Math.max(0,window.scrollY+rect.top-sticky-8),behavior:'smooth'});
-      }
-    });
-  }
+function bindRange(id,key,min,max){
+  const r=$('#'+id),n=$('#'+id+'Num');let startSnap=null;
+  const begin=()=>{if(!startSnap)startSnap=snapshotState()};
+  const update=v=>{state[key]=clamp(min,Number(v)||min,max);syncControls();reflow()};
+  const end=()=>{if(startSnap&&!sameState(startSnap,state))pushHistory(startSnap);startSnap=null};
+  r.addEventListener('pointerdown',begin);r.addEventListener('input',e=>update(e.target.value));r.addEventListener('change',end);r.addEventListener('pointerup',end);
+  n.addEventListener('focus',begin);n.addEventListener('change',e=>{update(e.target.value);end()});
 }
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),1800)}
-function resetAll(){state={...defaults};previewZoom=1;syncControls();reflow();resizeStage();toast('初期値に戻しました')}
-
-function stageUnits(rect){const sr=$('#stage').getBoundingClientRect();const sc=sr.width/1600;return{x:(rect.left-sr.left)/sc,y:(rect.top-sr.top)/sc,w:rect.width/sc,h:rect.height/sc,scale:sc}}
-function svgTextCenters(selector,fontSize,weight,letterSpacing,color){return $$(selector).map(el=>{const r=stageUnits(el.getBoundingClientRect());const text=esc(el.textContent.replace(/\u00a0/g,' '));return `<text x="${(r.x+r.w/2).toFixed(2)}" y="${(r.y+r.h/2).toFixed(2)}" text-anchor="middle" dominant-baseline="central" font-family="Noto Sans JP,Noto Sans CJK JP,Hiragino Sans,Yu Gothic,sans-serif" font-size="${fontSize}" font-weight="${weight}" letter-spacing="${letterSpacing}em" fill="${color}">${text}</text>`}).join('')}
-function logoDataForExport(){if(state.logoKind==='custom'&&state.logoData)return state.logoData;const colored=DEFAULT_LOGO_SVG.replaceAll('#ABED00',state.accentColor).replace('<svg ','<svg style="color:'+state.textColor+'" ');return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(colored)}
-function buildExportSvg(){
-  const bg=state.background==='square'?`<rect x="72" y="72" width="1456" height="756" rx="28" fill="${state.panelColor}"/>`:`<circle cx="800" cy="450" r="820" fill="none" stroke="${state.panelColor}" stroke-width="8"/><circle cx="800" cy="450" r="770" fill="${state.panelColor}"/>`;
-  const under=state.underlineVisible?$('.title-underline').map(el=>{const r=stageUnits(el.getBoundingClientRect());return `<rect x="${r.x.toFixed(2)}" y="${r.y.toFixed(2)}" width="${r.w.toFixed(2)}" height="${r.h.toFixed(2)}" fill="${state.accentColor}"/>`}).join(''):'';
-  let point=''; if(state.pointVisible){const r=stageUnits($('#pointLabel').getBoundingClientRect());const bgc=state.accentColor;const radius=Math.min(state.pointRadius,r.h/2);const cx=(r.x+r.w/2).toFixed(2),cy=(r.y+r.h/2).toFixed(2);const textAttrs=`x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="Noto Sans JP,Noto Sans CJK JP,Hiragino Sans,Yu Gothic,sans-serif" font-size="${state.pointSize}" font-weight="800" letter-spacing=".04em" fill="${state.textColor}"`;if(state.pointStyle==='bracket'){point=`<text ${textAttrs}>【${esc(state.pointText)}】</text>`;}else{const tail=state.pointStyle==='speech'?`<path d="M ${(r.x+r.w*.20).toFixed(2)} ${(r.y+r.h-1).toFixed(2)} L ${(r.x+r.w*.20+28).toFixed(2)} ${(r.y+r.h-1).toFixed(2)} L ${(r.x+r.w*.20).toFixed(2)} ${(r.y+r.h+22).toFixed(2)} Z" fill="${bgc}"/>`:'';point=`<g><rect x="${r.x.toFixed(2)}" y="${r.y.toFixed(2)}" width="${r.w.toFixed(2)}" height="${r.h.toFixed(2)}" rx="${radius.toFixed(2)}" fill="${bgc}"/>${tail}<text ${textAttrs}>${esc(state.pointText)}</text></g>`;}}
-  let logo=''; if(state.logoVisible){const logoR=stageUnits($('#logoWrap').getBoundingClientRect());logo=`<image href="${logoDataForExport()}" x="${logoR.x.toFixed(2)}" y="${logoR.y.toFixed(2)}" width="${logoR.w.toFixed(2)}" height="${logoR.h.toFixed(2)}" preserveAspectRatio="xMidYMid meet"/>`;}
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900"><rect width="1600" height="900" fill="${state.frameColor}"/>${bg}${under}${svgTextCenters('.title-text',lastFit.title,700,.018,state.textColor)}${svgTextCenters('.subtitle-text',lastFit.subtitle,600,.028,state.textColor)}${point}${logo}</svg>`;
-}
+function resetAll(){const before=snapshotState();state={...defaults};previewZoom=1;syncControls();reflow();resizeStage();if(!sameState(before,state))pushHistory(before);toast('初期値に戻しました')}
 async function exportPng(){
   try{await document.fonts.ready;reflow();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));const svg=buildExportSvg();const blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});const url=URL.createObjectURL(blob);const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=url});const c=document.createElement('canvas');c.width=1600;c.height=900;const ctx=c.getContext('2d');ctx.drawImage(img,0,0,1600,900);URL.revokeObjectURL(url);c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='pathos-guide-thumbnail.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)},'image/png');toast('PNGを書き出しました')}catch(e){console.error(e);toast('書き出しに失敗しました')}
 }
@@ -468,28 +461,28 @@ async function exportPng(){
 // Events
 $$('.phase-tab,.mobile-tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
 $$('.tuning-head').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('open')));
-$('#titleInput').addEventListener('input',e=>{state.title=e.target.value;reflow()});$('#subtitleInput').addEventListener('input',e=>{state.subtitle=e.target.value;reflow()});$('#pointInput').addEventListener('input',e=>{state.pointText=e.target.value;reflow()});
+function bindTextHistory(id,key){const el=$('#'+id);let startSnap=null;el.addEventListener('focus',()=>{startSnap=snapshotState()});el.addEventListener('input',e=>{state[key]=e.target.value;reflow()});el.addEventListener('blur',()=>{if(startSnap&&!sameState(startSnap,state))pushHistory(startSnap);startSnap=null})}
+bindTextHistory('titleInput','title');bindTextHistory('subtitleInput','subtitle');bindTextHistory('pointInput','pointText');
 bindRange('titleSize','titleSize',48,132);bindRange('subtitleSize','subtitleSize',28,76);bindRange('pointSize','pointSize',24,56);bindRange('pointRadius','pointRadius',0,48);bindRange('logoSize','logoWidth',110,320);
-$('#pointSwitch').addEventListener('click',()=>{state.pointVisible=!state.pointVisible;syncControls();reflow()});$('#underlineSwitch').addEventListener('click',()=>{state.underlineVisible=!state.underlineVisible;syncControls();reflow()});$('[data-point-style]').forEach(b=>b.addEventListener('click',()=>{state.pointStyle=b.dataset.pointStyle;syncControls();reflow()}));$('#logoSwitch').addEventListener('click',()=>{state.logoVisible=!state.logoVisible;syncControls();reflow()});
-$('[data-bg]').forEach(b=>b.addEventListener('click',()=>{state.background=b.dataset.bg;syncControls();reflow()}));
-[['frameColor','frameColor'],['panelColor','panelColor'],['textColor','textColor'],['accentColor','accentColor']].forEach(([id,k])=>$('#'+id).addEventListener('input',e=>{state[k]=e.target.value.toUpperCase();syncControls();reflow()}));
-$('#logoInput').addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{state.logoKind='custom';state.logoData=reader.result;renderLogo();reflow();toast('ロゴを差し替えました')};reader.readAsDataURL(f)});$('#logoResetBtn').addEventListener('click',()=>{state.logoKind='default';state.logoData=null;renderLogo();reflow()});
+function toggleState(key){const before=snapshotState();state[key]=!state[key];syncControls();reflow();pushHistory(before)}
+$('#pointSwitch').addEventListener('click',()=>toggleState('pointVisible'));$('#underlineSwitch').addEventListener('click',()=>toggleState('underlineVisible'));$('#logoSwitch').addEventListener('click',()=>toggleState('logoVisible'));
+$$('[data-point-style]').forEach(b=>b.addEventListener('click',()=>{if(state.pointStyle===b.dataset.pointStyle)return;const before=snapshotState();state.pointStyle=b.dataset.pointStyle;syncControls();reflow();pushHistory(before)}));
+$$('[data-bg]').forEach(b=>b.addEventListener('click',()=>{if(state.background===b.dataset.bg)return;const before=snapshotState();state.background=b.dataset.bg;syncControls();reflow();pushHistory(before)}));
+[['frameColor','frameColor'],['panelColor','panelColor'],['textColor','textColor'],['accentColor','accentColor']].forEach(([id,k])=>{const el=$('#'+id);let startSnap=null;el.addEventListener('pointerdown',()=>{startSnap=snapshotState()});el.addEventListener('input',e=>{if(!startSnap)startSnap=snapshotState();state[k]=e.target.value.toUpperCase();syncControls();reflow()});el.addEventListener('change',()=>{if(startSnap&&!sameState(startSnap,state))pushHistory(startSnap);startSnap=null})});
+$('#logoInput').addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;const before=snapshotState();const reader=new FileReader();reader.onload=()=>{state.logoKind='custom';state.logoData=reader.result;renderLogo();reflow();pushHistory(before);toast('ロゴを差し替えました')};reader.readAsDataURL(f)});
+$('#logoResetBtn').addEventListener('click',()=>{if(state.logoKind==='default'&&!state.logoData)return;const before=snapshotState();state.logoKind='default';state.logoData=null;renderLogo();reflow();pushHistory(before)});
 $('#zoomOutBtn').addEventListener('click',()=>{previewZoom=clamp(.6,previewZoom-.1,1.4);resizeStage()});$('#zoomInBtn').addEventListener('click',()=>{previewZoom=clamp(.6,previewZoom+.1,1.4);resizeStage()});
 $('#resetBtn').addEventListener('click',resetAll);$('#resetPanelBtn').addEventListener('click',resetAll);$('#exportBtn').addEventListener('click',exportPng);$('#exportTopBtn').addEventListener('click',exportPng);$('#exportMobileBtn').addEventListener('click',exportPng);
 $('#copySettingsBtn').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(JSON.stringify(state,null,2));toast('設定JSONをコピーしました')}catch{toast('コピーできませんでした')}});
-
-const resetHandlers={
-  title:()=>state.title=defaults.title, subtitle:()=>state.subtitle=defaults.subtitle, titleSize:()=>state.titleSize=defaults.titleSize, subtitleSize:()=>state.subtitleSize=defaults.subtitleSize,
-  underlineVisible:()=>state.underlineVisible=defaults.underlineVisible, pointVisible:()=>state.pointVisible=defaults.pointVisible, pointText:()=>state.pointText=defaults.pointText, pointStyle:()=>state.pointStyle=defaults.pointStyle, pointSize:()=>state.pointSize=defaults.pointSize, pointRadius:()=>state.pointRadius=defaults.pointRadius,
-  background:()=>state.background=defaults.background, frameColor:()=>state.frameColor=defaults.frameColor, panelColor:()=>state.panelColor=defaults.panelColor, textColor:()=>state.textColor=defaults.textColor, accentColor:()=>state.accentColor=defaults.accentColor,
-  logoVisible:()=>state.logoVisible=defaults.logoVisible, logoWidth:()=>state.logoWidth=defaults.logoWidth
-};
-$('[data-reset]').forEach(btn=>btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const fn=resetHandlers[btn.dataset.reset];if(fn){fn();syncControls();reflow();}}));
+['undoBtn','undoMobileBtn'].forEach(id=>$('#'+id)?.addEventListener('click',undo));['redoBtn','redoMobileBtn'].forEach(id=>$('#'+id)?.addEventListener('click',redo));
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo()}});
+const resetHandlers={titleSize:()=>state.titleSize=defaults.titleSize,subtitleSize:()=>state.subtitleSize=defaults.subtitleSize,pointSize:()=>state.pointSize=defaults.pointSize,pointRadius:()=>state.pointRadius=defaults.pointRadius,logoWidth:()=>state.logoWidth=defaults.logoWidth};
+$$('[data-reset]').forEach(btn=>btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const fn=resetHandlers[btn.dataset.reset];if(!fn)return;const before=snapshotState();fn();syncControls();reflow();if(!sameState(before,state))pushHistory(before)}));
 
 window.addEventListener('resize',()=>{resizeStage();reflow();updateStickyMetrics()});
 if(window.visualViewport)visualViewport.addEventListener('resize',()=>{resizeStage();updateStickyMetrics()});
 function initApp(){
-  syncControls();reflow();resizeStage();updateStickyMetrics();
+  syncControls();reflow();resizeStage();updateStickyMetrics();updateHistoryButtons();
   requestAnimationFrame(()=>{reflow();resizeStage();updateStickyMetrics()});
   if('ResizeObserver' in window){
     const stageResizeObserver=new ResizeObserver(()=>{resizeStage();updateStickyMetrics()});stageResizeObserver.observe($('#stageViewport'));
