@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#F9F8FC">
+<title>PATHOS Thumbnail Studio</title>
+<style>
+:root{
+  color-scheme: light;
+  /* NOIRU-derived editor UI tokens */
+  --ui-bg:#F9F8FC;
+  --ui-surface:#FFFFFF;
+  --ui-surface-2:#F5F3F9;
+  --ui-hover:#FAF8FD;
+  --ui-border:#E8E9F0;
+  --ui-border-soft:#F0EEF4;
+  --ui-text:#2B2F36;
+  --ui-muted:#5C6171;
+  --ui-dim:#A5A9B4;
+  --ui-accent:#ABED00;
+  --ui-accent-strong:#8DBE00;
+  --ui-accent-soft:#E8FFAE;
+  --r-xl:24px;
+  --r-lg:20px;
+  --r-md:14px;
+  --r-sm:10px;
+  --r-pill:999px;
+  --shadow-soft:0 1px 2px rgba(43,47,54,.03),0 2px 8px rgba(43,47,54,.04);
+  --shadow-card:0 2px 12px rgba(43,47,54,.05);
+  --shadow-cta:0 6px 20px rgba(171,237,0,.22);
+  --easing:cubic-bezier(.4,0,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+[hidden]{display:none!important}
+html,body{min-height:100%;background:var(--ui-bg);color:var(--ui-text);font-family:"Noto Sans JP","Noto Sans CJK JP","Hiragino Sans","Yu Gothic",system-ui,sans-serif}
+body{min-height:100dvh;overflow-x:hidden;overscroll-behavior:none;background-image:radial-gradient(ellipse 800px 500px at 100% 0%,rgba(233,230,247,.55),transparent 60%),radial-gradient(ellipse 700px 600px at 0% 100%,rgba(220,227,238,.38),transparent 65%);padding-bottom:env(safe-area-inset-bottom,0)}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid rgba(141,190,0,.55);outline-offset:2px}
+
+.app{max-width:1460px;margin:0 auto;padding:18px 20px 36px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-mark{width:26px;height:26px;border-radius:9px;background:var(--ui-accent);display:grid;place-items:center;color:#111;font-size:12px;font-weight:900;box-shadow:var(--shadow-soft)}
+.brand-copy{min-width:0}
+.brand-title{font-size:14px;line-height:1.2;font-weight:700;letter-spacing:.06em}
+.brand-sub{font-size:10px;color:var(--ui-muted);letter-spacing:.12em;margin-top:3px;text-transform:uppercase}
+.top-actions{display:flex;align-items:center;gap:8px}
+.ghost-btn,.primary-btn{border:1px solid var(--ui-border);border-radius:var(--r-pill);height:38px;padding:0 14px;background:rgba(255,255,255,.86);color:var(--ui-text);font-size:12px;font-weight:650;display:inline-flex;align-items:center;gap:7px;box-shadow:var(--shadow-soft);transition:.18s var(--easing)}
+.ghost-btn:hover{background:#fff;border-color:#DDE0E8}
+.primary-btn{background:var(--ui-accent);border-color:var(--ui-accent);color:#111;box-shadow:var(--shadow-cta)}
+.primary-btn:hover{filter:brightness(.97)}
+.primary-btn svg,.ghost-btn svg{width:14px;height:14px;flex:0 0 auto}
+
+.editor-columns{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:20px 32px;align-items:start}
+.editor-left{position:sticky;top:16px;align-self:start;min-width:0}
+.editor-right{min-width:0}
+
+.mobile-preview-toolbar{display:none}.mobile-brand{display:flex;align-items:center;gap:8px;min-width:0}.mobile-brand-mark{width:24px;height:24px;display:grid;place-items:center;flex:0 0 auto}.mobile-brand-mark svg{display:block;width:24px;height:24px}.mobile-brand-title{font-size:11px;font-weight:700;letter-spacing:.045em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preview-card{background:rgba(255,255,255,.88);border:1px solid var(--ui-border);border-radius:var(--r-xl);padding:14px;box-shadow:var(--shadow-card);backdrop-filter:blur(10px)}
+.preview-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 2px 12px}
+.preview-title{font-size:12px;font-weight:700;letter-spacing:.04em}
+.preview-meta{display:flex;align-items:center;gap:8px;color:var(--ui-muted);font-size:10px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.preview-dot{width:7px;height:7px;border-radius:50%;background:var(--ui-accent);box-shadow:0 0 0 4px rgba(171,237,0,.14)}
+.stage-viewport{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:16px;background:#E9E9E5;box-shadow:inset 0 0 0 1px rgba(17,17,17,.04);contain:layout paint;min-width:0}
+.stage-viewport>.stage{will-change:transform}
+.stage{position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0;overflow:hidden;background:#ABED00;color:#111;visibility:visible;transform:scale(.5)}
+.stage-bg-square{position:absolute;inset:72px;border-radius:28px;background:#F6F6F2}
+.stage-bg-circle-fill,.stage-bg-circle-outline{position:absolute;left:50%;top:50%;border-radius:50%;transform:translate(-50%,-50%)}
+.stage-bg-circle-fill{width:1540px;height:1540px;background:#F6F6F2}
+.stage-bg-circle-outline{width:1640px;height:1640px;border:8px solid #F6F6F2}
+.stage-safe{position:absolute;inset:72px;z-index:2;pointer-events:none;--safe-top:106px;--safe-x:92px;--safe-bottom:54px;--copy-shift:0px;--optical-shift:0px}
+.copy-zone{position:absolute;inset:0 var(--safe-x);min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;text-align:center;transform:translateY(calc(var(--optical-shift) + var(--copy-shift)))}
+.copy-wrap{position:relative;width:100%;max-width:1280px}
+.copy-stack{display:flex;flex-direction:column;align-items:center;width:100%}
+.point-label{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:var(--point-height,72px);padding:0 var(--point-pad-x,38px);margin:0 0 var(--point-gap,32px);border-radius:var(--point-radius,32px);background:#ABED00;color:#111;font-size:var(--point-size,36px);font-weight:800;line-height:1;letter-spacing:.04em;white-space:nowrap;flex:0 0 auto}
+.point-label[hidden]{display:none}
+.point-text{display:block;line-height:1;position:relative;z-index:2}
+.point-bracket{display:none;line-height:1;position:relative;z-index:2}
+.point-tail{display:none;position:absolute;left:22%;bottom:-18px;width:26px;height:22px;background:inherit;clip-path:polygon(0 0,100% 0,0 100%)}
+.point-label[data-style="bracket"]{min-height:auto;padding:0;background:transparent!important;border-radius:0!important;gap:.06em}
+.point-label[data-style="bracket"] .point-bracket{display:inline-block}
+.point-label[data-style="speech"] .point-tail{display:block}
+.title-lines{display:flex;flex-direction:column;align-items:center;gap:var(--title-line-gap,6px);font-weight:700;line-height:1.18;letter-spacing:.018em;width:100%}
+.title-line{display:flex;flex-direction:column;align-items:center;width:max-content;max-width:100%;white-space:nowrap}
+.title-text{display:block;line-height:1.18;white-space:nowrap}
+.title-underline{display:block;width:100%;height:var(--underline-height,8px);margin-top:var(--underline-gap,14px);background:#ABED00;flex:0 0 auto}
+.subtitle-lines{margin-top:var(--title-subtitle-gap,42px);display:flex;flex-direction:column;align-items:center;gap:var(--subtitle-line-gap,4px);font-weight:600;line-height:1.35;letter-spacing:.028em;width:100%}
+.subtitle-line{display:block;width:max-content;max-width:100%;white-space:nowrap}
+.subtitle-text{display:block;line-height:1.35;white-space:nowrap}
+.logo-zone{position:absolute;left:var(--safe-x);right:var(--safe-x);bottom:var(--safe-bottom);display:flex;justify-content:center;align-items:flex-end;min-height:1px;z-index:3}
+.logo-wrap{width:190px;line-height:0;display:flex;justify-content:center;align-items:flex-end}
+.logo-wrap svg,.logo-wrap img{display:block;max-width:100%;max-height:72px;width:100%;height:auto;object-fit:contain}
+.logo-wrap svg path,.logo-wrap svg polygon:not([fill]){fill:currentColor}
+.logo-wrap svg polygon[fill="#ABED00"]{fill:#ABED00}
+
+.status-row{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:10px 2px 0}
+.zoom-controls{display:flex;align-items:center;gap:6px;color:var(--ui-muted);font:10px ui-monospace,SFMono-Regular,Menlo,monospace}
+.icon-btn{width:30px;height:30px;border:1px solid var(--ui-border);border-radius:50%;background:#fff;color:var(--ui-muted);display:grid;place-items:center}.icon-btn svg{width:14px;height:14px;stroke:currentColor}
+
+.panel-card{background:rgba(255,255,255,.9);border:1px solid var(--ui-border);border-radius:var(--r-xl);box-shadow:var(--shadow-card);overflow:hidden;backdrop-filter:blur(10px)}
+.phase-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:8px;border-bottom:1px solid var(--ui-border-soft);background:rgba(249,248,252,.8)}
+.phase-tab{height:38px;border:0;background:transparent;border-radius:12px;color:var(--ui-muted);font-size:11px;font-weight:700;letter-spacing:.03em;transition:.18s var(--easing)}
+.phase-tab.active{background:var(--ui-surface);color:var(--ui-text);box-shadow:var(--shadow-soft)}
+.panel-scroll{max-height:calc(100dvh - 120px);overflow:auto;padding:0 16px 18px;scrollbar-width:thin;scrollbar-color:#D9DDE6 transparent}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+.tuning-group{border-top:1px solid var(--ui-border-soft)}
+.tuning-group:last-child{border-bottom:1px solid var(--ui-border-soft)}
+.tuning-head{width:100%;border:0;background:transparent;padding:14px 2px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:600;color:var(--ui-text);letter-spacing:.02em;-webkit-tap-highlight-color:transparent}
+.tuning-label{display:inline-flex;align-items:center;gap:8px}.tuning-icon{width:18px;height:18px;display:grid;place-items:center;color:var(--ui-muted);flex:0 0 auto}.tuning-icon svg{width:16px;height:16px;display:block;stroke:currentColor}.tuning-icon.type-icon{font-size:13px;font-weight:700;letter-spacing:-.04em;font-family:ui-sans-serif,system-ui,sans-serif}
+.tuning-right{display:inline-flex;align-items:center;gap:7px;color:var(--ui-muted)}
+.close-label{font-size:10px;font-weight:500;letter-spacing:.06em;display:none}.tuning-group.open .close-label{display:inline;color:var(--ui-accent-strong)}
+.chev{width:17px;height:17px;display:grid;place-items:center;transition:.2s var(--easing)}.chev svg{width:17px;height:17px;stroke:currentColor}.tuning-group.open .chev{transform:rotate(180deg);color:var(--ui-accent-strong)}
+.tuning-body{max-height:0;overflow:hidden;padding:0 2px;transition:max-height .28s var(--easing),padding .28s var(--easing),border .28s var(--easing),background .28s var(--easing)}
+.tuning-group.open .tuning-body{max-height:1200px;padding:10px 10px 14px;border-top:1px dashed var(--ui-border-soft);background:var(--ui-surface-2);border-radius:0 0 var(--r-md) var(--r-md);margin:0 -6px}
+
+.field{display:flex;flex-direction:column;gap:7px;margin:0 0 14px}.field:last-child{margin-bottom:0}
+.field-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.field-label{font-size:11px;font-weight:650;color:var(--ui-text)}
+.field-help{font-size:9.5px;color:var(--ui-dim);line-height:1.5}
+.value{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ui-muted);min-width:56px;text-align:right}
+.textarea,.text-input{width:100%;border:1px solid var(--ui-border);background:#fff;color:var(--ui-text);border-radius:12px;padding:10px 11px;font-size:13px;line-height:1.55;resize:vertical;min-height:44px;transition:border .15s var(--easing),box-shadow .15s var(--easing)}
+.textarea:focus,.text-input:focus{outline:none;border-color:#C5D995;box-shadow:0 0 0 3px rgba(171,237,0,.12)}
+.textarea{min-height:74px}
+.range-row{display:grid;grid-template-columns:1fr 58px;gap:10px;align-items:center}
+input[type=range]{appearance:none;width:100%;height:28px;background:transparent}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:#DCE0E7;border-radius:999px}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid #8DBE00;margin-top:-7px;box-shadow:0 1px 4px rgba(43,47,54,.18)}
+.number-input{height:34px;width:58px;border:1px solid var(--ui-border);border-radius:10px;background:#fff;text-align:center;font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ui-text)}
+.segment{display:grid;grid-template-columns:repeat(var(--count,2),1fr);gap:4px;padding:4px;border:1px solid var(--ui-border);border-radius:12px;background:#fff}
+.segment button{height:34px;border:0;background:transparent;border-radius:9px;font-size:11px;font-weight:650;color:var(--ui-muted)}
+.segment button.active{background:#F0F4E7;color:#111;box-shadow:inset 0 0 0 1px rgba(141,190,0,.24)}
+.switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.switch{position:relative;width:44px;height:26px;border-radius:999px;background:#D7DAE1;border:0;transition:.2s var(--easing)}
+.switch::after{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(43,47,54,.18);transition:.2s var(--easing)}
+.switch.on{background:var(--ui-accent-strong)}.switch.on::after{transform:translateX(18px)}
+.color-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.color-field{display:flex;align-items:center;gap:8px;border:1px solid var(--ui-border);background:#fff;border-radius:12px;padding:7px 8px}
+.color-field input[type=color]{width:26px;height:26px;border:0;padding:0;background:transparent;border-radius:8px;overflow:hidden}.color-field span{font:10px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ui-muted)}
+.upload{display:flex;flex-direction:column;gap:8px}.upload-btn{height:42px;border:1px dashed #C9CDD7;background:#fff;border-radius:12px;color:var(--ui-muted);font-size:11px;font-weight:650;display:flex;align-items:center;justify-content:center;gap:7px}.upload-btn svg{width:14px;height:14px;stroke:currentColor;flex:0 0 auto}.upload-btn:hover{border-color:#9DB75C;color:var(--ui-text)}
+.hidden-input{display:none}
+.action-stack{display:flex;flex-direction:column;gap:8px}.wide-btn{width:100%;min-height:46px;border-radius:13px;border:1px solid var(--ui-border);background:#fff;color:var(--ui-text);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}.wide-btn.primary{background:var(--ui-accent);border-color:var(--ui-accent);box-shadow:var(--shadow-cta)}
+.small-note{font-size:10px;color:var(--ui-muted);line-height:1.6}
+
+.mobile-tabs{display:none}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,18px);z-index:100;background:rgba(43,47,54,.94);color:#fff;border-radius:999px;padding:9px 14px;font-size:11px;opacity:0;pointer-events:none;transition:.22s var(--easing)}.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (hover:hover){.tuning-head:hover{color:var(--ui-accent-strong)}.phase-tab:hover{color:var(--ui-text)}.segment button:hover{background:var(--ui-hover)}}
+
+@media (max-width:899px){
+  .stage{transform:scale(.4)}
+  body{padding-bottom:calc(54px + env(safe-area-inset-bottom,0px))}
+  .app{padding:0 14px 24px}
+  /* NOIRU準拠: モバイルではヘッダーを消し、sticky領域を最上部から開始して初期→stickyの段差をなくす */
+  .topbar{display:none}
+  .editor-columns{display:block}
+  .editor-left{position:sticky;top:0;z-index:31;margin:0 -14px;padding:0 14px 12px;background:var(--ui-bg);box-shadow:0 8px 18px rgba(43,47,54,.05)}
+  .editor-left::after{content:"";position:absolute;left:0;right:0;bottom:0;height:12px;background:linear-gradient(to bottom,transparent 0%,rgba(249,248,252,.85) 100%);pointer-events:none}
+  .mobile-preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:8px 2px 6px;background:var(--ui-bg)}
+  .mobile-save-btn{height:34px;padding:0 12px;border:1px solid var(--ui-accent);border-radius:var(--r-pill);background:var(--ui-accent);color:#111;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--shadow-cta);-webkit-tap-highlight-color:transparent}
+  .mobile-save-btn svg{width:13px;height:13px;flex:0 0 auto}
+  .mobile-save-btn:active{transform:translateY(1px)}
+  .preview-card{padding:8px;border-radius:18px}.preview-head{display:none}.stage-viewport{border-radius:12px}
+  .status-row{display:none}
+  .editor-right{margin-top:12px;scroll-margin-top:calc(var(--mobile-sticky-h,280px) + 8px)}
+  .panel-card{border-radius:18px;box-shadow:none;background:rgba(255,255,255,.84)}
+  .phase-tabs{display:none}.panel-scroll{max-height:none;overflow:visible;padding:0 14px 18px}
+  .tab-panel{display:none}.tab-panel.active{display:block}
+  .tuning-head{min-height:50px}.tuning-group.open .tuning-body{padding:12px 10px 16px}
+  input[type=range]{height:34px}input[type=range]::-webkit-slider-thumb{width:20px;height:20px;margin-top:-8px}
+  /* NOIRU準拠: fixed bottom tabs + safe-area。activeは背景を足さず色だけで示す */
+  .mobile-tabs{position:fixed;left:0;right:0;bottom:0;z-index:90;min-height:54px;padding:4px 4px calc(4px + env(safe-area-inset-bottom,0px));display:flex;align-items:stretch;justify-content:space-around;background:var(--ui-surface);border-top:1px solid var(--ui-border-soft);box-shadow:0 -4px 20px rgba(20,22,30,.06);backdrop-filter:blur(16px)}
+  .mobile-tab{flex:1 1 0;min-width:0;border:0;background:transparent;border-radius:var(--r-sm);color:var(--ui-muted);font-size:9px;font-weight:500;letter-spacing:.04em;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .18s var(--easing)}
+  .mobile-tab .tab-icon{width:19px;height:19px;line-height:1;display:grid;place-items:center;transition:transform .18s var(--easing)}
+  .mobile-tab .tab-icon svg{width:19px;height:19px;stroke:currentColor}.mobile-tab .tab-icon.type-icon{font-size:14px;font-weight:700;letter-spacing:-.04em}
+  .mobile-tab.active{color:var(--ui-accent-strong)}
+  .mobile-tab.active .tab-icon{transform:translateY(-1px)}
+  .toast{bottom:68px}
+}
+@media (max-width:640px){
+  .stage{transform:scale(.2475)}
+  .app{padding-left:10px;padding-right:10px}.editor-left{margin-left:-10px;margin-right:-10px;padding-left:10px;padding-right:10px}
+  .preview-card{padding:6px}.panel-scroll{padding-left:12px;padding-right:12px}.color-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">P</div>
+      <div class="brand-copy"><div class="brand-title">PATHOS Thumbnail Studio</div></div>
+    </div>
+    <div class="top-actions">
+      <button class="ghost-btn" id="resetBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 3 11 8 11"/><path d="M5.1 17a9 9 0 1 0 .5-10.3L3 9"/></svg><span>リセット</span></button>
+      <button class="primary-btn" id="exportTopBtn" aria-label="保存"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>保存</span></button>
+    </div>
+  </header>
+
+  <main class="editor-columns">
+    <section class="editor-left" id="editorLeft">
+      <div class="mobile-preview-toolbar" id="mobilePreviewToolbar">
+        <div class="mobile-brand" aria-label="PATHOS Thumbnail Studio">
+          <span class="mobile-brand-mark"><svg viewBox="0 0 142.12 134.81" aria-hidden="true"><path fill="#111" d="M135.86,134.81h-15.67V28.66L16.16,66.52v68.29H6.27c-3.46,0-6.27-2.81-6.27-6.27V53.44c0-2.64,1.65-4.99,4.13-5.89L133.71.38c4.09-1.49,8.41,1.54,8.41,5.89v122.26c0,3.46-2.81,6.27-6.27,6.27Z"/><polygon fill="#ABED00" points="16.16 58.65 38.52 60.05 38.52 126 16.16 134.81 16.16 58.65"/></svg></span>
+          <span class="mobile-brand-title">PATHOS Thumbnail Studio</span>
+        </div>
+        <button class="mobile-save-btn" id="exportMobileBtn" type="button" aria-label="保存">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>保存</span>
+        </button>
+      </div>
+      <div class="preview-card">
+        <div class="preview-head"><div class="preview-title">プレビュー</div><div class="preview-meta"><span class="preview-dot"></span><span>1600 × 900</span></div></div>
+        <div class="stage-viewport" id="stageViewport">
+          <div class="stage" id="stage">
+            <div class="stage-bg-square" id="bgSquare"></div>
+            <div class="stage-bg-circle-outline" id="bgCircleOutline" hidden></div>
+            <div class="stage-bg-circle-fill" id="bgCircleFill" hidden></div>
+            <div class="stage-safe" id="stageSafe">
+              <div class="copy-zone" id="copyZone"><div class="copy-wrap" id="copyWrap"><div class="copy-stack" id="copyStack">
+                <div class="point-label" id="pointLabel" data-style="box"><span class="point-bracket" aria-hidden="true">【</span><span class="point-text" id="pointText">ポイント解説</span><span class="point-bracket" aria-hidden="true">】</span><span class="point-tail" aria-hidden="true"></span></div>
+                <h1 class="title-lines" id="titleLines"></h1>
+                <div class="subtitle-lines" id="subtitleLines"></div>
+              </div></div></div>
+              <div class="logo-zone" id="logoZone"><div class="logo-wrap" id="logoWrap"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="status-row"><div class="zoom-controls"><button class="icon-btn" id="zoomOutBtn" aria-label="縮小"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button><span id="zoomValue">100%</span><button class="icon-btn" id="zoomInBtn" aria-label="拡大"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+      </div>
+    </section>
+
+    <aside class="editor-right">
+      <div class="panel-card">
+        <nav class="phase-tabs" aria-label="編集フェーズ">
+          <button class="phase-tab active" data-tab="text">テキスト</button><button class="phase-tab" data-tab="layout">レイアウト</button><button class="phase-tab" data-tab="style">カラー</button><button class="phase-tab" data-tab="export">保存</button>
+        </nav>
+        <div class="panel-scroll">
+          <section class="tab-panel active" data-panel="text">
+            <div class="tuning-group open">
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></span>見出し・補足</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <div class="tuning-body">
+                <label class="field"><span class="field-label">見出し</span><textarea class="textarea" id="titleInput">展示会のリード獲得とは？</textarea></label>
+                <label class="field"><span class="field-label">補足</span><textarea class="textarea" id="subtitleInput">成果につながる考え方・KPI・改善方法</textarea></label>
+              </div>
+            </div>
+            <div class="tuning-group open">
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8M12 4v16"/><polyline points="8 8 12 4 16 8"/><polyline points="8 16 12 20 16 16"/></svg></span>文字サイズ</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <div class="tuning-body">
+                <div class="field"><div class="field-row"><span class="field-label">見出し</span><span class="value" id="titleSizeValue">82 px</span></div><div class="range-row"><input id="titleSize" type="range" min="48" max="132" value="82"><input class="number-input" id="titleSizeNum" type="number" min="48" max="132" value="82"></div></div>
+                <div class="field"><div class="field-row"><span class="field-label">補足</span><span class="value" id="subtitleSizeValue">48 px</span></div><div class="range-row"><input id="subtitleSize" type="range" min="28" max="76" value="48"><input class="number-input" id="subtitleSizeNum" type="number" min="28" max="76" value="48"></div></div>
+              </div>
+            </div>
+            <div class="tuning-group open">
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="6"/><path d="M8 12h8"/></svg></span>ポイント枠</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <div class="tuning-body">
+                <div class="field"><div class="switch-row"><div><div class="field-label">表示</div></div><button class="switch on" id="pointSwitch" aria-pressed="true"></button></div></div>
+                <label class="field"><span class="field-label">テキスト</span><input class="text-input" id="pointInput" value="ポイント解説"></label>
+                <div class="field"><div class="field-label">デザイン</div><div class="segment" style="--count:3"><button class="active" data-point-style="box">ボックス</button><button data-point-style="bracket">墨付き括弧</button><button data-point-style="speech">吹き出し</button></div></div>
+                <div class="field"><div class="field-row"><span class="field-label">文字サイズ</span><span class="value" id="pointSizeValue">42 px</span></div><div class="range-row"><input id="pointSize" type="range" min="24" max="56" value="42"><input class="number-input" id="pointSizeNum" type="number" min="24" max="56" value="42"></div></div>
+                <div class="field" id="pointRadiusField"><div class="field-row"><span class="field-label">角丸</span><span class="value" id="pointRadiusValue">32 px</span></div><div class="range-row"><input id="pointRadius" type="range" min="0" max="48" value="32"><input class="number-input" id="pointRadiusNum" type="number" min="0" max="48" value="32"></div></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="tab-panel" data-panel="layout">
+            <div class="tuning-group open">
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="12" cy="12" r="5"/></svg></span>背景パターン</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <div class="tuning-body">
+                <div class="field"><div class="segment" style="--count:2"><button class="active" data-bg="square">四角形</button><button data-bg="circle">円形</button></div></div>
+                <div class="field" id="squareOptions"><div class="field-row"><span class="field-label">四角形の角丸</span><span class="value" id="panelRadiusValue">28 px</span></div><div class="range-row"><input id="panelRadius" type="range" min="0" max="80" value="28"><input class="number-input" id="panelRadiusNum" type="number" min="0" max="80" value="28"></div></div><div class="field" id="circleOptions" hidden><div class="field-row"><span class="field-label">外円の線幅</span><span class="value" id="circleStrokeValue">8 px</span></div><div class="range-row"><input id="circleStroke" type="range" min="2" max="18" value="8"><input class="number-input" id="circleStrokeNum" type="number" min="2" max="18" value="8"></div></div>
+              </div>
+            </div>
+            <div class="tuning-group open">
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></span>セーフエリア</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <div class="tuning-body">
+                <div class="field"><div class="field-row"><span class="field-label">左右パディング</span><span class="value" id="padXValue">92 px</span></div><div class="range-row"><input id="padX" type="range" min="56" max="180" value="92"><input class="number-input" id="padXNum" type="number" min="56" max="180" value="92"></div></div>
+                <div class="field"><div class="field-row"><span class="field-label">上パディング</span><span class="value" id="padTopValue">106 px</span></div><div class="range-row"><input id="padTop" type="range" min="64" max="180" value="106"><input class="number-input" id="padTopNum" type="number" min="64" max="180" value="106"></div></div>
+                <div class="field"><div class="field-row"><span class="field-label">下パディング</span><span class="value" id="padBottomValue">54 px</span></div><div class="range-row"><input id="padBottom" type="range" min="32" max="120" value="54"><input class="number-input" id="padBottomNum" type="number" min="32" max="120" value="54"></div></div>
+              </div>
+            </div>
+            <div class="tuning-group">
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2" fill="white"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2" fill="white"/></svg></span>位置・密度</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <div class="tuning-body">
+                <div class="field"><div class="field-row"><span class="field-label">コピー位置</span><span class="value" id="copyShiftValue">0 px</span></div><div class="range-row"><input id="copyShift" type="range" min="-60" max="70" value="0"><input class="number-input" id="copyShiftNum" type="number" min="-60" max="70" value="0"></div></div>
+                <div class="field"><div class="field-label">余白密度</div><div class="segment" style="--count:3"><button data-density="compact">詰める</button><button class="active" data-density="normal">標準</button><button data-density="loose">広め</button></div></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="tab-panel" data-panel="style">
+            <div class="tuning-group open">
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor" stroke="none" opacity=".22"/></svg></span>カラー</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <div class="tuning-body">
+                <div class="color-grid">
+                  <label class="field"><span class="field-label">外枠</span><div class="color-field"><input type="color" id="frameColor" value="#ABED00"><span id="frameColorText">#ABED00</span></div></label>
+                  <label class="field"><span class="field-label">メインエリア</span><div class="color-field"><input type="color" id="panelColor" value="#F6F6F2"><span id="panelColorText">#F6F6F2</span></div></label>
+                  <label class="field"><span class="field-label">テキスト</span><div class="color-field"><input type="color" id="textColor" value="#111111"><span id="textColorText">#111111</span></div></label>
+                  <label class="field"><span class="field-label">強調</span><div class="color-field"><input type="color" id="accentColor" value="#ABED00"><span id="accentColorText">#ABED00</span></div></label>
+                </div>
+                <div class="field"><div class="switch-row"><div><div class="field-label">ポイント枠を強調色に連動</div></div><button class="switch on" id="pointColorLinkSwitch" aria-pressed="true"></button></div></div>
+              </div>
+            </div>
+            <div class="tuning-group open">
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18V7l8-3 8 3v11"/><path d="M8 20V9l4-1.5V20"/></svg></span>ロゴ</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <div class="tuning-body">
+                <div class="field"><div class="switch-row"><div><div class="field-label">表示</div></div><button class="switch on" id="logoSwitch" aria-pressed="true"></button></div></div>
+                <div class="upload"><label class="upload-btn" for="logoInput"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>PNG / SVGを差し替え</span></label><input class="hidden-input" id="logoInput" type="file" accept="image/png,image/svg+xml"></div>
+                <div class="field" style="margin-top:14px"><div class="field-row"><span class="field-label">ロゴ幅</span><span class="value" id="logoSizeValue">190 px</span></div><div class="range-row"><input id="logoSize" type="range" min="110" max="320" value="190"><input class="number-input" id="logoSizeNum" type="number" min="110" max="320" value="190"></div></div>
+                <button class="wide-btn" id="logoResetBtn">PATHOSロゴに戻す</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="tab-panel" data-panel="export">
+            <div class="tuning-group open">
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>保存</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <div class="tuning-body">
+                <div class="action-stack"><button class="wide-btn primary" id="exportBtn">PNGを書き出す</button><button class="wide-btn" id="copySettingsBtn">設定JSONをコピー</button></div>
+              </div>
+            </div>
+            <div class="tuning-group">
+              <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 3 11 8 11"/><path d="M5.1 17a9 9 0 1 0 .5-10.3L3 9"/></svg></span>初期化</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span></span></button>
+              <div class="tuning-body"><button class="wide-btn" id="resetPanelBtn">すべて初期値に戻す</button></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<nav class="mobile-tabs" aria-label="編集フェーズ">
+  <button class="mobile-tab active" data-tab="text"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></span><span>テキスト</span></button>
+  <button class="mobile-tab" data-tab="layout"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="12" cy="12" r="5"/></svg></span><span>レイアウト</span></button>
+  <button class="mobile-tab" data-tab="style"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor" stroke="none" opacity=".22"/></svg></span><span>カラー</span></button>
+  <button class="mobile-tab" data-tab="export"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span><span>保存</span></button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+const DEFAULT_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560.87 134.81" role="img" aria-label="PATHOS"><path d="M135.86,134.81h-15.67V28.66L16.16,66.52v68.29H6.27c-3.46,0-6.27-2.81-6.27-6.27V53.44c0-2.64,1.65-4.99,4.13-5.89L133.71.38c4.09-1.49,8.41,1.54,8.41,5.89v122.26c0,3.46-2.81,6.27-6.27,6.27Z"/><polygon fill="#ABED00" points="16.16 58.65 38.52 60.05 38.52 126 16.16 134.81 16.16 58.65"/><path d="M213.54,49.19h-23.35v60.42h7.94v-21.22h14.31c12.43,0,24.96-6.15,24.96-20.05,0-11.64-9.37-19.16-23.86-19.16ZM229.46,68.59v.16c0,7.43-6.58,12.22-16.77,12.22h-14.56v-24.37h15.07c4.89,0,16.26,1.17,16.26,11.98Z"/><polygon points="269.38 48.79 239.97 109.62 248.48 109.62 272.52 59.27 296.49 109.62 305.25 109.62 275.84 48.79 269.38 48.79"/><polygon points="306.46 56.62 327.2 56.62 327.2 109.62 335.14 109.62 335.14 56.62 355.88 56.62 355.88 49.19 306.46 49.19 306.46 56.62"/><polygon points="413.38 75.53 378.82 75.53 378.82 49.19 370.88 49.19 370.88 109.62 378.82 109.62 378.82 82.95 413.38 82.95 413.38 109.62 421.32 109.62 421.32 49.19 413.38 49.19 413.38 75.53"/><path d="M501.29,78.48c-.39-17.31-13.83-30.26-31.58-30.26s-31.76,13.7-31.76,31.35,13.58,31.03,31.59,31.03,31.36-13.31,31.76-30.44l.07-.83-.06-.84h-.01ZM493.19,79.41v.16c0,13.5-10.1,23.69-23.48,23.69s-23.66-10.48-23.66-24.01,10.1-23.68,23.48-23.68,23.66,10.48,23.66,23.85Z"/><path d="M539.9,75.57c-14.72-2.88-15.92-6.56-15.92-10.87,0-5.2,5.37-8.97,12.78-8.97,6.47,0,11.6,1.86,16.64,6.02l1.34,1.11,5.11-6.07-1.46-1.12c-6.73-5.17-12.95-7.27-21.47-7.27-11.91,0-20.89,7.19-20.89,16.88s6.43,14.83,21.49,17.74c14.24,2.74,15.4,6.33,15.4,10.55,0,5.62-5.46,9.54-13.29,9.54s-13.63-2.25-20.17-8.01l-1.3-1.14-5.28,5.79,1.38,1.18c7.71,6.59,15.46,9.53,25.11,9.53,12.65,0,21.48-7.11,21.48-17.45,0-9.22-6.47-14.59-20.97-17.42Z"/></svg>`;
+
+const defaults = {
+  title:'展示会のリード獲得とは？', subtitle:'成果につながる考え方・KPI・改善方法', pointText:'ポイント解説', pointVisible:true,
+  titleSize:82, subtitleSize:48, pointSize:42, pointStyle:'box', background:'square', panelRadius:28, circleStroke:8, pointRadius:32,
+  padX:92, padTop:106, padBottom:54, copyShift:0, density:'normal',
+  frameColor:'#ABED00', panelColor:'#F6F6F2', textColor:'#111111', accentColor:'#ABED00', pointColorLinked:true,
+  logoWidth:190, logoVisible:true, logoKind:'default', logoData:null
+};
+let state = {...defaults};
+let previewZoom = 1;
+let lastFit = {title:82,subtitle:48,status:'ok'};
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const clamp=(min,v,max)=>Math.max(min,Math.min(max,v));
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+function deriveMetrics(titleSize, subtitleSize){
+  const density = state.density==='compact'?.84:state.density==='loose'?1.18:1;
+  return {
+    underlineGap:Math.round(clamp(10,titleSize*.17,22)*density),
+    underlineHeight:Math.round(clamp(5,titleSize*.0975,12)),
+    titleSubtitleGap:Math.round(clamp(28,(titleSize+subtitleSize)*.323,62)*density),
+    pointGap:Math.round(clamp(24,titleSize*.39,52)*density),
+    pointHeight:Math.round(clamp(58,state.pointSize*1.9,96)),
+    pointSize:state.pointSize,
+    pointPadX:Math.round(clamp(26,state.pointSize*1.08,58)),
+    titleLineGap:Math.round(clamp(2,titleSize*.07,10)*density),
+    subtitleLineGap:Math.round(clamp(2,subtitleSize*.08,8)*density)
+  };
+}
+function lines(text){ const a=String(text||'').split(/\r?\n/); return a.length?a:['']; }
+function renderLogo(){
+  const zone=$('#logoZone'), wrap=$('#logoWrap');
+  zone.hidden=!state.logoVisible;
+  wrap.style.width=state.logoWidth+'px'; wrap.style.color=state.textColor;
+  if(!state.logoVisible){ wrap.innerHTML=''; updateOpticalLayout(); return; }
+  if(state.logoKind==='custom'&&state.logoData){wrap.innerHTML=`<img alt="logo" src="${state.logoData}">`;}
+  else {wrap.innerHTML=DEFAULT_LOGO_SVG; const poly=wrap.querySelector('polygon[fill="#ABED00"]'); if(poly) poly.setAttribute('fill',state.accentColor);}
+  requestAnimationFrame(updateOpticalLayout);
+}
+function updateOpticalLayout(){
+  const safe=$('#stageSafe'), wrap=$('#logoWrap');
+  const logoH=state.logoVisible ? (wrap.offsetHeight||0) : 0;
+  const reserve=state.logoVisible ? Math.max(0,logoH+34) : 0;
+  safe.dataset.logoReserve=String(reserve);
+  const opticalShift=state.logoVisible ? -(logoH*.72 + 14) : 0;
+  safe.style.setProperty('--optical-shift',opticalShift+'px');
+  safe.style.setProperty('--copy-shift',state.copyShift+'px');
+}
+function renderTextLines(){
+  $('#titleLines').innerHTML=lines(state.title).map(x=>`<span class="title-line"><span class="title-text">${esc(x)||'&nbsp;'}</span><span class="title-underline"></span></span>`).join('');
+  $('#subtitleLines').innerHTML=lines(state.subtitle).map(x=>`<span class="subtitle-line"><span class="subtitle-text">${esc(x)||'&nbsp;'}</span></span>`).join('');
+  $('#pointText').textContent=state.pointText||'ポイント解説'; const pointEl=$('#pointLabel'); pointEl.hidden=!state.pointVisible; pointEl.dataset.style=state.pointStyle;
+}
+function applyVisualState(){
+  const stage=$('#stage'); stage.style.background=state.frameColor; stage.style.color=state.textColor;
+  $('#bgSquare').style.background=state.panelColor; $('#bgSquare').style.borderRadius=state.panelRadius+'px'; $('#bgSquare').hidden=state.background!=='square';
+  $('#bgCircleFill').style.background=state.panelColor; $('#bgCircleOutline').style.borderColor=state.panelColor; $('#bgCircleOutline').style.borderWidth=state.circleStroke+'px';
+  $('#bgCircleFill').hidden=state.background!=='circle'; $('#bgCircleOutline').hidden=state.background!=='circle';
+  const safe=$('#stageSafe'); safe.style.setProperty('--safe-x',state.padX+'px'); safe.style.setProperty('--safe-top',state.padTop+'px'); safe.style.setProperty('--safe-bottom',state.padBottom+'px');
+  safe.style.setProperty('--copy-shift',state.copyShift+'px');
+  $('.title-lines').style.color=state.textColor; $('.subtitle-lines').style.color=state.textColor;
+  document.documentElement.style.setProperty('--ui-accent',state.accentColor);
+  $$('.title-underline').forEach(el=>el.style.background=state.accentColor);
+  const point=$('#pointLabel'); point.style.background=state.pointColorLinked?state.accentColor:defaults.accentColor; point.style.color=state.textColor; point.style.setProperty('--point-radius',state.pointRadius+'px'); point.dataset.style=state.pointStyle;
+  renderLogo();
+}
+function setMetricVars(m){
+  const root=$('#stage');
+  root.style.setProperty('--underline-gap',m.underlineGap+'px');root.style.setProperty('--underline-height',m.underlineHeight+'px');root.style.setProperty('--title-subtitle-gap',m.titleSubtitleGap+'px');root.style.setProperty('--point-gap',m.pointGap+'px');root.style.setProperty('--point-height',m.pointHeight+'px');root.style.setProperty('--point-size',m.pointSize+'px');root.style.setProperty('--point-pad-x',m.pointPadX+'px');root.style.setProperty('--title-line-gap',m.titleLineGap+'px');root.style.setProperty('--subtitle-line-gap',m.subtitleLineGap+'px');
+  $$('.title-underline').forEach(el=>el.style.background=state.accentColor);
+}
+function setFontSizes(t,s){ $('.title-lines').style.fontSize=t+'px'; $('.subtitle-lines').style.fontSize=s+'px'; }
+function isOverflowing(){
+  const stack=$('#copyStack').getBoundingClientRect(), stageR=$('#stage').getBoundingClientRect();
+  const sc=stageR.width/1600 || 1;
+  const reserve=Number($('#stageSafe').dataset.logoReserve||0);
+  const allowedTop=stageR.top + (72 + state.padTop)*sc;
+  const allowedBottom=stageR.top + (900 - 72 - state.padBottom - reserve)*sc;
+  const titleOverflow=$$('.title-text').some(el=>el.scrollWidth>$('#copyWrap').clientWidth+1);
+  const subOverflow=$$('.subtitle-text').some(el=>el.scrollWidth>$('#copyWrap').clientWidth+1);
+  const vertical=stack.top<allowedTop-1||stack.bottom>allowedBottom+1;
+  return {overflow:titleOverflow||subOverflow||vertical,titleOverflow,subOverflow,vertical};
+}
+function reflow(){
+  renderTextLines(); applyVisualState(); updateOpticalLayout();
+  let t=state.titleSize, s=state.subtitleSize; setMetricVars(deriveMetrics(t,s)); setFontSizes(t,s);
+  let check=isOverflowing(), loops=0;
+  // Internal overflow guard: requested size is honored until the component would leave its safe area.
+  // This is intentionally not a user-facing mode; spacing scales first, font reduction is the final safety net.
+  while(check.overflow && loops<120 && (t>48||s>28)){
+    if(check.titleOverflow && t>48)t-=1;
+    if(check.subOverflow && s>28)s-=1;
+    if(check.vertical){ if(t>48)t-=1; if(s>28)s-=1; }
+    setMetricVars(deriveMetrics(t,s)); setFontSizes(t,s); updateOpticalLayout(); check=isOverflowing(); loops++;
+  }
+  lastFit={title:t,subtitle:s,status:check.overflow?'error':(t<state.titleSize||s<state.subtitleSize?'clamped':'ok')};
+  renderLogo(); updateOpticalLayout();
+}
+function resizeStage(){
+  const vp=$('#stageViewport'), stage=$('#stage'); if(!vp||!stage)return;
+  const w=vp.clientWidth; if(!w)return;
+  const fitScale=w/1600;
+  vp.style.height=(w*9/16)+'px';
+  const scale=fitScale*previewZoom;
+  stage.style.width='1600px'; stage.style.height='900px';
+  stage.style.transformOrigin='0 0'; stage.style.transform=`scale(${scale})`;
+  $('#zoomValue').textContent=Math.round(previewZoom*100)+'%';
+}
+function syncControls(){
+  const map=[['titleInput','title'],['subtitleInput','subtitle'],['pointInput','pointText']]; map.forEach(([id,k])=>{$('#'+id).value=state[k]});
+  const nums=[['titleSize',state.titleSize,'titleSizeValue',' px'],['subtitleSize',state.subtitleSize,'subtitleSizeValue',' px'],['pointSize',state.pointSize,'pointSizeValue',' px'],['panelRadius',state.panelRadius,'panelRadiusValue',' px'],['circleStroke',state.circleStroke,'circleStrokeValue',' px'],['pointRadius',state.pointRadius,'pointRadiusValue',' px'],['padX',state.padX,'padXValue',' px'],['padTop',state.padTop,'padTopValue',' px'],['padBottom',state.padBottom,'padBottomValue',' px'],['copyShift',state.copyShift,'copyShiftValue',' px'],['logoSize',state.logoWidth,'logoSizeValue',' px']];
+  nums.forEach(([id,v,valId,suf])=>{const el=$('#'+id),num=$('#'+id+'Num'); if(el)el.value=v;if(num)num.value=v;if($('#'+valId))$('#'+valId).textContent=v+suf});
+  [['frameColor','frameColor'],['panelColor','panelColor'],['textColor','textColor'],['accentColor','accentColor']].forEach(([id,k])=>{$('#'+id).value=state[k];$('#'+id+'Text').textContent=state[k].toUpperCase()});
+  setSwitch('#pointSwitch',state.pointVisible);setSwitch('#pointColorLinkSwitch',state.pointColorLinked);setSwitch('#logoSwitch',state.logoVisible);
+  $$('[data-bg]').forEach(b=>b.classList.toggle('active',b.dataset.bg===state.background));$$('[data-point-style]').forEach(b=>b.classList.toggle('active',b.dataset.pointStyle===state.pointStyle));$('#pointRadiusField').hidden=state.pointStyle==='bracket';$('#circleOptions').hidden=state.background!=='circle';$('#squareOptions').hidden=state.background!=='square';
+  $$('[data-density]').forEach(b=>b.classList.toggle('active',b.dataset.density===state.density));
+}
+function setSwitch(sel,on){const el=$(sel);el.classList.toggle('on',!!on);el.setAttribute('aria-pressed',String(!!on));}
+function bindRange(id,key,min,max){const r=$('#'+id),n=$('#'+id+'Num'); const update=v=>{state[key]=clamp(min,Number(v)||min,max);syncControls();reflow()};r.addEventListener('input',e=>update(e.target.value));n.addEventListener('change',e=>update(e.target.value));}
+function mobileStickyHeight(){return innerWidth<900 ? ($('#editorLeft')?.getBoundingClientRect().height||0) : 0}
+function updateStickyMetrics(){document.documentElement.style.setProperty('--mobile-sticky-h',Math.ceil(mobileStickyHeight())+'px')}
+function switchTab(name){
+  $$('.phase-tab,.mobile-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+  $$('.tab-panel').forEach(p=>p.classList.toggle('active',p.dataset.panel===name));
+  if(innerWidth<900){
+    requestAnimationFrame(()=>{
+      updateStickyMetrics();
+      const right=$('.editor-right'); if(!right)return;
+      const sticky=mobileStickyHeight(); const rect=right.getBoundingClientRect();
+      if(rect.top<sticky-2 || rect.top>sticky+40){
+        window.scrollTo({top:Math.max(0,window.scrollY+rect.top-sticky-8),behavior:'smooth'});
+      }
+    });
+  }
+}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),1800)}
+function resetAll(){state={...defaults};previewZoom=1;syncControls();reflow();resizeStage();toast('初期値に戻しました')}
+
+function stageUnits(rect){const sr=$('#stage').getBoundingClientRect();const sc=sr.width/1600;return{x:(rect.left-sr.left)/sc,y:(rect.top-sr.top)/sc,w:rect.width/sc,h:rect.height/sc,scale:sc}}
+function svgTextCenters(selector,fontSize,weight,letterSpacing,color){return $$(selector).map(el=>{const r=stageUnits(el.getBoundingClientRect());const text=esc(el.textContent.replace(/\u00a0/g,' '));return `<text x="${(r.x+r.w/2).toFixed(2)}" y="${(r.y+r.h/2).toFixed(2)}" text-anchor="middle" dominant-baseline="central" font-family="Noto Sans JP,Noto Sans CJK JP,Hiragino Sans,Yu Gothic,sans-serif" font-size="${fontSize}" font-weight="${weight}" letter-spacing="${letterSpacing}em" fill="${color}">${text}</text>`}).join('')}
+function logoDataForExport(){if(state.logoKind==='custom'&&state.logoData)return state.logoData;const colored=DEFAULT_LOGO_SVG.replaceAll('#ABED00',state.accentColor).replace('<svg ','<svg style="color:'+state.textColor+'" ');return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(colored)}
+function buildExportSvg(){
+  const bg=state.background==='square'?`<rect x="72" y="72" width="1456" height="756" rx="${state.panelRadius}" fill="${state.panelColor}"/>`:`<circle cx="800" cy="450" r="820" fill="none" stroke="${state.panelColor}" stroke-width="${state.circleStroke}"/><circle cx="800" cy="450" r="770" fill="${state.panelColor}"/>`;
+  const under=$$('.title-underline').map(el=>{const r=stageUnits(el.getBoundingClientRect());return `<rect x="${r.x.toFixed(2)}" y="${r.y.toFixed(2)}" width="${r.w.toFixed(2)}" height="${r.h.toFixed(2)}" fill="${state.accentColor}"/>`}).join('');
+  let point=''; if(state.pointVisible){const r=stageUnits($('#pointLabel').getBoundingClientRect());const bgc=state.pointColorLinked?state.accentColor:defaults.accentColor;const radius=Math.min(state.pointRadius,r.h/2);const cx=(r.x+r.w/2).toFixed(2),cy=(r.y+r.h/2).toFixed(2);const textAttrs=`x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="Noto Sans JP,Noto Sans CJK JP,Hiragino Sans,Yu Gothic,sans-serif" font-size="${state.pointSize}" font-weight="800" letter-spacing=".04em" fill="${state.textColor}"`;if(state.pointStyle==='bracket'){point=`<text ${textAttrs}>【${esc(state.pointText)}】</text>`;}else{const tail=state.pointStyle==='speech'?`<path d="M ${(r.x+r.w*.20).toFixed(2)} ${(r.y+r.h-1).toFixed(2)} L ${(r.x+r.w*.20+28).toFixed(2)} ${(r.y+r.h-1).toFixed(2)} L ${(r.x+r.w*.20).toFixed(2)} ${(r.y+r.h+22).toFixed(2)} Z" fill="${bgc}"/>`:'';point=`<g><rect x="${r.x.toFixed(2)}" y="${r.y.toFixed(2)}" width="${r.w.toFixed(2)}" height="${r.h.toFixed(2)}" rx="${radius.toFixed(2)}" fill="${bgc}"/>${tail}<text ${textAttrs}>${esc(state.pointText)}</text></g>`;}}
+  let logo=''; if(state.logoVisible){const logoR=stageUnits($('#logoWrap').getBoundingClientRect());logo=`<image href="${logoDataForExport()}" x="${logoR.x.toFixed(2)}" y="${logoR.y.toFixed(2)}" width="${logoR.w.toFixed(2)}" height="${logoR.h.toFixed(2)}" preserveAspectRatio="xMidYMid meet"/>`;}
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900"><rect width="1600" height="900" fill="${state.frameColor}"/>${bg}${under}${svgTextCenters('.title-text',lastFit.title,700,.018,state.textColor)}${svgTextCenters('.subtitle-text',lastFit.subtitle,600,.028,state.textColor)}${point}${logo}</svg>`;
+}
+async function exportPng(){
+  try{await document.fonts.ready;reflow();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));const svg=buildExportSvg();const blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});const url=URL.createObjectURL(blob);const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=url});const c=document.createElement('canvas');c.width=1600;c.height=900;const ctx=c.getContext('2d');ctx.drawImage(img,0,0,1600,900);URL.revokeObjectURL(url);c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='pathos-guide-thumbnail.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)},'image/png');toast('PNGを書き出しました')}catch(e){console.error(e);toast('書き出しに失敗しました')}
+}
+
+// Events
+$$('.phase-tab,.mobile-tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+$$('.tuning-head').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('open')));
+$('#titleInput').addEventListener('input',e=>{state.title=e.target.value;reflow()});$('#subtitleInput').addEventListener('input',e=>{state.subtitle=e.target.value;reflow()});$('#pointInput').addEventListener('input',e=>{state.pointText=e.target.value;reflow()});
+bindRange('titleSize','titleSize',48,132);bindRange('subtitleSize','subtitleSize',28,76);bindRange('pointSize','pointSize',24,56);bindRange('panelRadius','panelRadius',0,80);bindRange('circleStroke','circleStroke',2,18);bindRange('pointRadius','pointRadius',0,48);bindRange('padX','padX',56,180);bindRange('padTop','padTop',64,180);bindRange('padBottom','padBottom',32,120);bindRange('copyShift','copyShift',-60,70);bindRange('logoSize','logoWidth',110,320);
+$('#pointSwitch').addEventListener('click',()=>{state.pointVisible=!state.pointVisible;syncControls();reflow()});$$('[data-point-style]').forEach(b=>b.addEventListener('click',()=>{state.pointStyle=b.dataset.pointStyle;syncControls();reflow()}));$('#pointColorLinkSwitch').addEventListener('click',()=>{state.pointColorLinked=!state.pointColorLinked;syncControls();reflow()});$('#logoSwitch').addEventListener('click',()=>{state.logoVisible=!state.logoVisible;syncControls();reflow()});
+$$('[data-bg]').forEach(b=>b.addEventListener('click',()=>{state.background=b.dataset.bg;syncControls();reflow()}));$$('[data-density]').forEach(b=>b.addEventListener('click',()=>{state.density=b.dataset.density;syncControls();reflow()}));
+[['frameColor','frameColor'],['panelColor','panelColor'],['textColor','textColor'],['accentColor','accentColor']].forEach(([id,k])=>$('#'+id).addEventListener('input',e=>{state[k]=e.target.value.toUpperCase();syncControls();reflow()}));
+$('#logoInput').addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{state.logoKind='custom';state.logoData=reader.result;renderLogo();reflow();toast('ロゴを差し替えました')};reader.readAsDataURL(f)});$('#logoResetBtn').addEventListener('click',()=>{state.logoKind='default';state.logoData=null;renderLogo();reflow()});
+$('#zoomOutBtn').addEventListener('click',()=>{previewZoom=clamp(.6,previewZoom-.1,1.4);resizeStage()});$('#zoomInBtn').addEventListener('click',()=>{previewZoom=clamp(.6,previewZoom+.1,1.4);resizeStage()});
+$('#resetBtn').addEventListener('click',resetAll);$('#resetPanelBtn').addEventListener('click',resetAll);$('#exportBtn').addEventListener('click',exportPng);$('#exportTopBtn').addEventListener('click',exportPng);$('#exportMobileBtn').addEventListener('click',exportPng);
+$('#copySettingsBtn').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(JSON.stringify(state,null,2));toast('設定JSONをコピーしました')}catch{toast('コピーできませんでした')}});
+window.addEventListener('resize',()=>{resizeStage();reflow();updateStickyMetrics()});
+if(window.visualViewport)visualViewport.addEventListener('resize',()=>{resizeStage();updateStickyMetrics()});
+function initApp(){
+  syncControls();reflow();resizeStage();updateStickyMetrics();
+  requestAnimationFrame(()=>{reflow();resizeStage();updateStickyMetrics()});
+  if('ResizeObserver' in window){
+    const stageResizeObserver=new ResizeObserver(()=>{resizeStage();updateStickyMetrics()});stageResizeObserver.observe($('#stageViewport'));
+    const stickyResizeObserver=new ResizeObserver(updateStickyMetrics);stickyResizeObserver.observe($('#editorLeft'));
+  }
+}
+try{initApp()}catch(err){console.error('PATHOS Thumbnail Studio init error',err);try{resizeStage()}catch(_){}}
+</script>
+</body>
+</html>
