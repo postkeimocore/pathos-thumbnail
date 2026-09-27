@@ -501,9 +501,49 @@ function updateOpticalLayout(){
   const reserve=state.logoVisible ? Math.max(0,logoH + 32) : 0;
   safe.style.setProperty('--logo-reserve',reserve+'px');
 }
+const TEXT_LINE_MAX_WIDTH=1280;
+const textMeasureCanvas=document.createElement('canvas');
+const textMeasureCtx=textMeasureCanvas.getContext('2d');
+function measuredTextWidth(text,size,weight,letterSpacingEm){
+  if(!textMeasureCtx)return 0;
+  textMeasureCtx.font=`${weight} ${size}px "Noto Sans JP","Noto Sans CJK JP","Hiragino Sans","Yu Gothic",sans-serif`;
+  const chars=Array.from(String(text||''));
+  return textMeasureCtx.measureText(chars.join('')).width + Math.max(0,chars.length-1)*size*letterSpacingEm;
+}
+function wrapLineToWidth(line,size,weight,letterSpacingEm,maxWidth=TEXT_LINE_MAX_WIDTH){
+  const raw=String(line??'');
+  if(raw===''||measuredTextWidth(raw,size,weight,letterSpacingEm)<=maxWidth)return [raw];
+  const chars=Array.from(raw), out=[];
+  let start=0;
+  while(start<chars.length){
+    while(start<chars.length && /[\s　]/.test(chars[start]))start++;
+    if(start>=chars.length)break;
+    let lo=1,hi=chars.length-start,fit=1;
+    while(lo<=hi){
+      const mid=Math.floor((lo+hi)/2);
+      const part=chars.slice(start,start+mid).join('');
+      if(measuredTextWidth(part,size,weight,letterSpacingEm)<=maxWidth){fit=mid;lo=mid+1}else{hi=mid-1}
+    }
+    let end=start+Math.max(1,fit);
+    if(end<chars.length){
+      const candidate=chars.slice(start,end).join('');
+      const space=Math.max(candidate.lastIndexOf(' '),candidate.lastIndexOf('　'));
+      if(space>=Math.floor(candidate.length*.6))end=start+space+1;
+    }
+    const chunk=chars.slice(start,end).join('').trimEnd();
+    out.push(chunk||chars[start]);
+    start=end;
+  }
+  return out.length?out:[''];
+}
+function wrappedLines(text,size,weight,letterSpacingEm){
+  return lines(text).flatMap(line=>wrapLineToWidth(line,size,weight,letterSpacingEm));
+}
 function renderTextLines(){
-  $('#titleLines').innerHTML=lines(state.title).map(x=>`<span class="title-line"><span class="title-text">${esc(x)||'&nbsp;'}</span><span class="title-underline"></span></span>`).join('');
-  $('#subtitleLines').innerHTML=lines(state.subtitle).map(x=>`<span class="subtitle-line"><span class="subtitle-text">${esc(x)||'&nbsp;'}</span></span>`).join('');
+  const titleRows=wrappedLines(state.title,state.titleSize,700,.018);
+  const subtitleRows=wrappedLines(state.subtitle,state.subtitleSize,600,.028);
+  $('#titleLines').innerHTML=titleRows.map(x=>`<span class="title-line"><span class="title-text">${esc(x)||'&nbsp;'}</span><span class="title-underline"></span></span>`).join('');
+  $('#subtitleLines').innerHTML=subtitleRows.map(x=>`<span class="subtitle-line"><span class="subtitle-text">${esc(x)||'&nbsp;'}</span></span>`).join('');
   $('#pointText').textContent=state.pointText; const pointEl=$('#pointLabel'); pointEl.hidden=!state.pointVisible; pointEl.dataset.style=state.pointStyle;
 }
 function applyVisualState(){
@@ -524,23 +564,16 @@ function setMetricVars(m){
 }
 function setFontSizes(t,s){ $('.title-lines').style.fontSize=t+'px'; $('.subtitle-lines').style.fontSize=s+'px'; }
 function isOverflowing(){
-  const titleOverflow=$$('.title-text').some(el=>el.scrollWidth>$('#copyWrap').clientWidth+1);
-  const subOverflow=$$('.subtitle-text').some(el=>el.scrollWidth>$('#copyWrap').clientWidth+1);
+  const titleOverflow=$('.title-text').some(el=>el.scrollWidth>$('#copyWrap').clientWidth+1);
+  const subOverflow=$('.subtitle-text').some(el=>el.scrollWidth>$('#copyWrap').clientWidth+1);
   return {overflow:titleOverflow||subOverflow,titleOverflow,subOverflow,vertical:false};
 }
 function reflow(){
+  const t=state.titleSize, s=state.subtitleSize;
   renderTextLines(); applyVisualState(); updateOpticalLayout();
-  let t=state.titleSize, s=state.subtitleSize; setMetricVars(deriveMetrics(t,s)); setFontSizes(t,s);
-  let check=isOverflowing(), loops=0;
-  // Internal horizontal overflow guard: requested size is honored unless a line exceeds the fixed content width.
-  // Logo size and vertical layout never change the requested font size.
-  while(check.overflow && loops<120 && (t>48||s>28)){
-    if(check.titleOverflow && t>48)t-=1;
-    if(check.subOverflow && s>28)s-=1;
-    if(check.vertical){ if(t>48)t-=1; if(s>28)s-=1; }
-    setMetricVars(deriveMetrics(t,s)); setFontSizes(t,s); updateOpticalLayout(); check=isOverflowing(); loops++;
-  }
-  lastFit={title:t,subtitle:s,status:check.overflow?'error':(t<state.titleSize||s<state.subtitleSize?'clamped':'ok')};
+  setMetricVars(deriveMetrics(t,s)); setFontSizes(t,s);
+  const check=isOverflowing();
+  lastFit={title:t,subtitle:s,status:check.overflow?'error':'ok'};
   renderLogo(); updateOpticalLayout();
 }
 function resizeStage(){
@@ -679,6 +712,7 @@ function initApp(){
   }
 }
 try{initApp()}catch(err){console.error('PATHOS Thumbnail Studio init error',err);try{resizeStage()}catch(_){}}
+if(document.fonts?.ready)document.fonts.ready.then(()=>{reflow();resizeStage();updateStickyMetrics()}).catch(()=>{});
 </script>
 </body>
 </html>
