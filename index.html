@@ -564,8 +564,8 @@ function setMetricVars(m){
 }
 function setFontSizes(t,s){ $('.title-lines').style.fontSize=t+'px'; $('.subtitle-lines').style.fontSize=s+'px'; }
 function isOverflowing(){
-  const titleOverflow=$('.title-text').some(el=>el.scrollWidth>$('#copyWrap').clientWidth+1);
-  const subOverflow=$('.subtitle-text').some(el=>el.scrollWidth>$('#copyWrap').clientWidth+1);
+  const titleOverflow=Array.from(document.querySelectorAll('.title-text')).some(el=>el.scrollWidth>$('#copyWrap').clientWidth+1);
+  const subOverflow=Array.from(document.querySelectorAll('.subtitle-text')).some(el=>el.scrollWidth>$('#copyWrap').clientWidth+1);
   return {overflow:titleOverflow||subOverflow,titleOverflow,subOverflow,vertical:false};
 }
 function reflow(){
