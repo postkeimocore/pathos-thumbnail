@@ -636,22 +636,85 @@ function resetAll(){
 }
 function stageUnits(rect){const sr=$('#stage').getBoundingClientRect();const sc=sr.width/1600;return{x:(rect.left-sr.left)/sc,y:(rect.top-sr.top)/sc,w:rect.width/sc,h:rect.height/sc,scale:sc}}
 function svgTextCenters(selector,fontSize,weight,letterSpacing,color){return $$(selector).map(el=>{const r=stageUnits(el.getBoundingClientRect());const text=esc(el.textContent.replace(/\u00a0/g,' '));return `<text x="${(r.x+r.w/2).toFixed(2)}" y="${(r.y+r.h/2).toFixed(2)}" text-anchor="middle" dominant-baseline="central" font-family="Noto Sans JP,Noto Sans CJK JP,Hiragino Sans,Yu Gothic,sans-serif" font-size="${fontSize}" font-weight="${weight}" letter-spacing="${letterSpacing}em" fill="${color}">${text}</text>`}).join('')}
-function logoMarkupForExport(logoR){
-  if(state.logoKind==='custom'&&state.logoData){
-    return `<image href="${esc(state.logoData)}" x="${logoR.x.toFixed(2)}" y="${logoR.y.toFixed(2)}" width="${logoR.w.toFixed(2)}" height="${logoR.h.toFixed(2)}" preserveAspectRatio="xMidYMid meet"/>`;
-  }
-  const inner=DEFAULT_LOGO_SVG
-    .replace(/^<svg[^>]*>/,'')
-    .replace(/<\/svg>\s*$/,'')
-    .replaceAll('#ABED00',state.accentColor);
-  return `<svg x="${logoR.x.toFixed(2)}" y="${logoR.y.toFixed(2)}" width="${logoR.w.toFixed(2)}" height="${logoR.h.toFixed(2)}" viewBox="0 0 560.87 134.81" preserveAspectRatio="xMidYMid meet" fill="${state.textColor}">${inner}</svg>`;
+function canvasRoundRect(ctx,x,y,w,h,r){
+  const radius=Math.max(0,Math.min(Number(r)||0,w/2,h/2));
+  ctx.beginPath();
+  ctx.moveTo(x+radius,y);
+  ctx.arcTo(x+w,y,x+w,y+h,radius);
+  ctx.arcTo(x+w,y+h,x,y+h,radius);
+  ctx.arcTo(x,y+h,x,y,radius);
+  ctx.arcTo(x,y,x+w,y,radius);
+  ctx.closePath();
 }
-function buildExportSvg(){
-  const bg=state.background==='square'?`<rect x="72" y="72" width="1456" height="756" rx="32" fill="${state.panelColor}"/>`:`<circle cx="800" cy="450" r="820" fill="none" stroke="${state.panelColor}" stroke-width="8"/><circle cx="800" cy="450" r="770" fill="${state.panelColor}"/>`;
-  const under=state.underlineVisible?$$('.title-underline').map(el=>{const r=stageUnits(el.getBoundingClientRect());return `<rect x="${r.x.toFixed(2)}" y="${r.y.toFixed(2)}" width="${r.w.toFixed(2)}" height="${r.h.toFixed(2)}" fill="${state.accentColor}"/>`}).join(''):'';
-  let point=''; if(state.pointVisible){const r=stageUnits($('#pointLabel').getBoundingClientRect());const bgc=state.accentColor;const radius=Math.min(state.pointRadius,r.h/2);const cx=(r.x+r.w/2).toFixed(2),cy=(r.y+r.h/2).toFixed(2);const textAttrs=`x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="Noto Sans JP,Noto Sans CJK JP,Hiragino Sans,Yu Gothic,sans-serif" font-size="${state.pointSize}" font-weight="800" letter-spacing=".04em" fill="${state.textColor}"`;if(state.pointStyle==='bracket'){point=`<text ${textAttrs}>【${esc(state.pointText)}】</text>`;}else{const tail=state.pointStyle==='speech'?`<path d="M ${(r.x+r.w*.20).toFixed(2)} ${(r.y+r.h-1).toFixed(2)} L ${(r.x+r.w*.20+28).toFixed(2)} ${(r.y+r.h-1).toFixed(2)} L ${(r.x+r.w*.20).toFixed(2)} ${(r.y+r.h+22).toFixed(2)} Z" fill="${bgc}"/>`:'';point=`<g><rect x="${r.x.toFixed(2)}" y="${r.y.toFixed(2)}" width="${r.w.toFixed(2)}" height="${r.h.toFixed(2)}" rx="${radius.toFixed(2)}" fill="${bgc}"/>${tail}<text ${textAttrs}>${esc(state.pointText)}</text></g>`;}}
-  let logo=''; if(state.logoVisible){const logoR=stageUnits($('#logoWrap').getBoundingClientRect());logo=logoMarkupForExport(logoR);}
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900"><rect width="1600" height="900" fill="${state.frameColor}"/>${bg}${under}${svgTextCenters('.title-text',lastFit.title,700,.018,state.textColor)}${svgTextCenters('.subtitle-text',lastFit.subtitle,600,.028,state.textColor)}${point}${logo}</svg>`;
+function canvasFontFamily(){return '"Noto Sans JP","Noto Sans CJK JP","Hiragino Sans","Yu Gothic",sans-serif'}
+function drawTrackedText(ctx,text,cx,cy,fontSize,fontWeight,letterSpacingEm,color){
+  const chars=Array.from(String(text||''));
+  const tracking=fontSize*letterSpacingEm;
+  ctx.font=`${fontWeight} ${fontSize}px ${canvasFontFamily()}`;
+  ctx.textAlign='left';
+  ctx.textBaseline='middle';
+  ctx.fillStyle=color;
+  const widths=chars.map(ch=>ctx.measureText(ch).width);
+  const total=widths.reduce((a,b)=>a+b,0)+Math.max(0,chars.length-1)*tracking;
+  let x=cx-total/2;
+  chars.forEach((ch,i)=>{
+    ctx.fillText(ch,x,cy);
+    x+=widths[i]+tracking;
+  });
+}
+function drawTextElementsToCanvas(ctx,selector,fontSize,fontWeight,letterSpacingEm,color){
+  $$(selector).forEach(el=>{
+    const r=stageUnits(el.getBoundingClientRect());
+    drawTrackedText(ctx,el.textContent.replace(/\u00a0/g,' '),r.x+r.w/2,r.y+r.h/2,fontSize,fontWeight,letterSpacingEm,color);
+  });
+}
+function drawDefaultLogoToCanvas(ctx,logoR){
+  const sourceW=560.87,sourceH=134.81;
+  const scale=Math.min(logoR.w/sourceW,logoR.h/sourceH);
+  const ox=logoR.x+(logoR.w-sourceW*scale)/2;
+  const oy=logoR.y+(logoR.h-sourceH*scale)/2;
+  const doc=new DOMParser().parseFromString(DEFAULT_LOGO_SVG,'image/svg+xml');
+  ctx.save();
+  ctx.translate(ox,oy);
+  ctx.scale(scale,scale);
+  doc.querySelectorAll('path,polygon').forEach(el=>{
+    const isAccent=String(el.getAttribute('fill')||'').toUpperCase()==='#ABED00';
+    ctx.fillStyle=isAccent?state.accentColor:state.textColor;
+    if(el.tagName.toLowerCase()==='path'){
+      ctx.fill(new Path2D(el.getAttribute('d')||''));
+    }else{
+      const pts=String(el.getAttribute('points')||'').trim().split(/\s+/).map(pair=>pair.split(',').map(Number)).filter(p=>p.length===2&&p.every(Number.isFinite));
+      if(pts.length){
+        ctx.beginPath();
+        ctx.moveTo(pts[0][0],pts[0][1]);
+        for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+  });
+  ctx.restore();
+}
+function loadExportImage(src){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=()=>reject(new Error('カスタムロゴを読み込めませんでした'));
+    img.src=src;
+  });
+}
+async function drawLogoToCanvas(ctx){
+  if(!state.logoVisible)return;
+  const logoR=stageUnits($('#logoWrap').getBoundingClientRect());
+  if(state.logoKind==='custom'&&state.logoData){
+    const img=await loadExportImage(state.logoData);
+    const iw=img.naturalWidth||img.width||1,ih=img.naturalHeight||img.height||1;
+    const scale=Math.min(logoR.w/iw,logoR.h/ih);
+    const w=iw*scale,h=ih*scale;
+    ctx.drawImage(img,logoR.x+(logoR.w-w)/2,logoR.y+(logoR.h-h)/2,w,h);
+    return;
+  }
+  drawDefaultLogoToCanvas(ctx,logoR);
 }
 function exportFilename(){
   const pad=n=>String(n).padStart(2,'0');
@@ -664,9 +727,8 @@ function exportFilename(){
 }
 function canvasToPngBlob(canvas){
   return new Promise((resolve,reject)=>{
-    try{
-      canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('PNG blob generation failed')),'image/png');
-    }catch(err){reject(err)}
+    try{canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('PNGデータを生成できませんでした')),'image/png')}
+    catch(err){reject(err)}
   });
 }
 async function exportPng(){
@@ -674,34 +736,67 @@ async function exportPng(){
     await document.fonts.ready;
     reflow();
     await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-    const svg=buildExportSvg();
-    const url='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
-    const img=new Image();
-    await new Promise((resolve,reject)=>{
-      img.onload=()=>resolve();
-      img.onerror=()=>reject(new Error('Export SVG could not be rendered'));
-      img.src=url;
-    });
     const c=document.createElement('canvas');
-    c.width=1600;
-    c.height=900;
+    c.width=1600;c.height=900;
     const ctx=c.getContext('2d');
-    if(!ctx)throw new Error('Canvas 2D context unavailable');
-    ctx.drawImage(img,0,0,1600,900);
+    if(!ctx)throw new Error('Canvasを初期化できませんでした');
+
+    ctx.fillStyle=state.frameColor;
+    ctx.fillRect(0,0,1600,900);
+
+    ctx.fillStyle=state.panelColor;
+    if(state.background==='square'){
+      canvasRoundRect(ctx,72,72,1456,756,32);
+      ctx.fill();
+    }else{
+      ctx.beginPath();ctx.arc(800,450,770,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(800,450,820,0,Math.PI*2);
+      ctx.strokeStyle=state.panelColor;ctx.lineWidth=8;ctx.stroke();
+    }
+
+    if(state.underlineVisible){
+      ctx.fillStyle=state.accentColor;
+      $$('.title-underline').forEach(el=>{
+        const r=stageUnits(el.getBoundingClientRect());
+        ctx.fillRect(r.x,r.y,r.w,r.h);
+      });
+    }
+
+    drawTextElementsToCanvas(ctx,'.title-text',lastFit.title,700,.018,state.textColor);
+    drawTextElementsToCanvas(ctx,'.subtitle-text',lastFit.subtitle,600,.028,state.textColor);
+
+    if(state.pointVisible){
+      const r=stageUnits($('#pointLabel').getBoundingClientRect());
+      const cx=r.x+r.w/2,cy=r.y+r.h/2;
+      if(state.pointStyle==='bracket'){
+        drawTrackedText(ctx,`【${state.pointText}】`,cx,cy,state.pointSize,800,.04,state.textColor);
+      }else{
+        ctx.fillStyle=state.accentColor;
+        canvasRoundRect(ctx,r.x,r.y,r.w,r.h,Math.min(state.pointRadius,r.h/2));
+        ctx.fill();
+        if(state.pointStyle==='speech'){
+          ctx.beginPath();
+          ctx.moveTo(r.x+r.w*.20,r.y+r.h-1);
+          ctx.lineTo(r.x+r.w*.20+28,r.y+r.h-1);
+          ctx.lineTo(r.x+r.w*.20,r.y+r.h+22);
+          ctx.closePath();ctx.fill();
+        }
+        drawTrackedText(ctx,state.pointText,cx,cy,state.pointSize,800,.04,state.textColor);
+      }
+    }
+
+    await drawLogoToCanvas(ctx);
+
     const pngBlob=await canvasToPngBlob(c);
     const downloadUrl=URL.createObjectURL(pngBlob);
     const a=document.createElement('a');
-    a.href=downloadUrl;
-    a.download=exportFilename();
-    a.style.display='none';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    a.href=downloadUrl;a.download=exportFilename();a.style.display='none';
+    document.body.appendChild(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(downloadUrl),1500);
     toast('PNGを書き出しました');
   }catch(e){
     console.error('PATHOS Thumbnail Studio export error',e);
-    toast('書き出しに失敗しました');
+    toast(`書き出し失敗: ${e?.message||'不明なエラー'}`);
   }
 }
 
