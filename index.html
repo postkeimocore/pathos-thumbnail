@@ -683,7 +683,11 @@ function drawDefaultLogoToCanvas(ctx,logoR){
     if(el.tagName.toLowerCase()==='path'){
       ctx.fill(new Path2D(el.getAttribute('d')||''));
     }else{
-      const pts=String(el.getAttribute('points')||'').trim().split(/\s+/).map(pair=>pair.split(',').map(Number)).filter(p=>p.length===2&&p.every(Number.isFinite));
+      const nums=(String(el.getAttribute('points')||'').match(/-?\\d*\\.?\\d+(?:[eE][+-]?\\d+)?/g)||[]).map(Number);
+      const pts=[];
+      for(let i=0;i+1<nums.length;i+=2){
+        if(Number.isFinite(nums[i])&&Number.isFinite(nums[i+1]))pts.push([nums[i],nums[i+1]]);
+      }
       if(pts.length){
         ctx.beginPath();
         ctx.moveTo(pts[0][0],pts[0][1]);
