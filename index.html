@@ -541,11 +541,14 @@ function wrappedLines(text,size,weight,letterSpacingEm){
   return lines(text).flatMap(line=>wrapLineToWidth(line,size,weight,letterSpacingEm));
 }
 function renderTextLines(){
-  const titleRows=wrappedLines(state.title,state.titleSize,700,.018);
-  const subtitleRows=wrappedLines(state.subtitle,state.subtitleSize,600,.028);
+  const titleDisplay=state.title||'見出しテキスト';
+  const subtitleDisplay=state.subtitle||'補足テキスト';
+  const pointDisplay=state.pointText||'ポイントテキスト';
+  const titleRows=wrappedLines(titleDisplay,state.titleSize,700,.018);
+  const subtitleRows=wrappedLines(subtitleDisplay,state.subtitleSize,600,.028);
   $('#titleLines').innerHTML=titleRows.map(x=>`<span class="title-line"><span class="title-text">${esc(x)||'&nbsp;'}</span><span class="title-underline"></span></span>`).join('');
   $('#subtitleLines').innerHTML=subtitleRows.map(x=>`<span class="subtitle-line"><span class="subtitle-text">${esc(x)||'&nbsp;'}</span></span>`).join('');
-  $('#pointText').textContent=state.pointText; const pointEl=$('#pointLabel'); pointEl.hidden=!state.pointVisible; pointEl.dataset.style=state.pointStyle;
+  $('#pointText').textContent=pointDisplay; const pointEl=$('#pointLabel'); pointEl.hidden=!state.pointVisible; pointEl.dataset.style=state.pointStyle;
 }
 function applyVisualState(){
   const stage=$('#stage'); stage.style.background=state.frameColor; stage.style.color=state.textColor;
@@ -774,7 +777,7 @@ async function exportPng(){
       const r=stageUnits($('#pointLabel').getBoundingClientRect());
       const cx=r.x+r.w/2,cy=r.y+r.h/2;
       if(state.pointStyle==='bracket'){
-        drawTrackedText(ctx,`【${state.pointText}】`,cx,cy,state.pointSize,800,.04,state.textColor);
+        drawTrackedText(ctx,`【${state.pointText||'ポイントテキスト'}】`,cx,cy,state.pointSize,800,.04,state.textColor);
       }else{
         ctx.fillStyle=state.accentColor;
         canvasRoundRect(ctx,r.x,r.y,r.w,r.h,Math.min(state.pointRadius,r.h/2));
@@ -786,7 +789,7 @@ async function exportPng(){
           ctx.lineTo(r.x+r.w*.20,r.y+r.h+22);
           ctx.closePath();ctx.fill();
         }
-        drawTrackedText(ctx,state.pointText,cx,cy,state.pointSize,800,.04,state.textColor);
+        drawTrackedText(ctx,state.pointText||'ポイントテキスト',cx,cy,state.pointSize,800,.04,state.textColor);
       }
     }
 
