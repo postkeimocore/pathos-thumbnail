@@ -636,12 +636,21 @@ function resetAll(){
 }
 function stageUnits(rect){const sr=$('#stage').getBoundingClientRect();const sc=sr.width/1600;return{x:(rect.left-sr.left)/sc,y:(rect.top-sr.top)/sc,w:rect.width/sc,h:rect.height/sc,scale:sc}}
 function svgTextCenters(selector,fontSize,weight,letterSpacing,color){return $$(selector).map(el=>{const r=stageUnits(el.getBoundingClientRect());const text=esc(el.textContent.replace(/\u00a0/g,' '));return `<text x="${(r.x+r.w/2).toFixed(2)}" y="${(r.y+r.h/2).toFixed(2)}" text-anchor="middle" dominant-baseline="central" font-family="Noto Sans JP,Noto Sans CJK JP,Hiragino Sans,Yu Gothic,sans-serif" font-size="${fontSize}" font-weight="${weight}" letter-spacing="${letterSpacing}em" fill="${color}">${text}</text>`}).join('')}
-function logoDataForExport(){if(state.logoKind==='custom'&&state.logoData)return state.logoData;const colored=DEFAULT_LOGO_SVG.replaceAll('#ABED00',state.accentColor).replace('<svg ','<svg style="color:'+state.textColor+'" ');return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(colored)}
+function logoMarkupForExport(logoR){
+  if(state.logoKind==='custom'&&state.logoData){
+    return `<image href="${esc(state.logoData)}" x="${logoR.x.toFixed(2)}" y="${logoR.y.toFixed(2)}" width="${logoR.w.toFixed(2)}" height="${logoR.h.toFixed(2)}" preserveAspectRatio="xMidYMid meet"/>`;
+  }
+  const inner=DEFAULT_LOGO_SVG
+    .replace(/^<svg[^>]*>/,'')
+    .replace(/<\/svg>\s*$/,'')
+    .replaceAll('#ABED00',state.accentColor);
+  return `<svg x="${logoR.x.toFixed(2)}" y="${logoR.y.toFixed(2)}" width="${logoR.w.toFixed(2)}" height="${logoR.h.toFixed(2)}" viewBox="0 0 560.87 134.81" preserveAspectRatio="xMidYMid meet" fill="${state.textColor}">${inner}</svg>`;
+}
 function buildExportSvg(){
   const bg=state.background==='square'?`<rect x="72" y="72" width="1456" height="756" rx="32" fill="${state.panelColor}"/>`:`<circle cx="800" cy="450" r="820" fill="none" stroke="${state.panelColor}" stroke-width="8"/><circle cx="800" cy="450" r="770" fill="${state.panelColor}"/>`;
   const under=state.underlineVisible?$$('.title-underline').map(el=>{const r=stageUnits(el.getBoundingClientRect());return `<rect x="${r.x.toFixed(2)}" y="${r.y.toFixed(2)}" width="${r.w.toFixed(2)}" height="${r.h.toFixed(2)}" fill="${state.accentColor}"/>`}).join(''):'';
   let point=''; if(state.pointVisible){const r=stageUnits($('#pointLabel').getBoundingClientRect());const bgc=state.accentColor;const radius=Math.min(state.pointRadius,r.h/2);const cx=(r.x+r.w/2).toFixed(2),cy=(r.y+r.h/2).toFixed(2);const textAttrs=`x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="Noto Sans JP,Noto Sans CJK JP,Hiragino Sans,Yu Gothic,sans-serif" font-size="${state.pointSize}" font-weight="800" letter-spacing=".04em" fill="${state.textColor}"`;if(state.pointStyle==='bracket'){point=`<text ${textAttrs}>【${esc(state.pointText)}】</text>`;}else{const tail=state.pointStyle==='speech'?`<path d="M ${(r.x+r.w*.20).toFixed(2)} ${(r.y+r.h-1).toFixed(2)} L ${(r.x+r.w*.20+28).toFixed(2)} ${(r.y+r.h-1).toFixed(2)} L ${(r.x+r.w*.20).toFixed(2)} ${(r.y+r.h+22).toFixed(2)} Z" fill="${bgc}"/>`:'';point=`<g><rect x="${r.x.toFixed(2)}" y="${r.y.toFixed(2)}" width="${r.w.toFixed(2)}" height="${r.h.toFixed(2)}" rx="${radius.toFixed(2)}" fill="${bgc}"/>${tail}<text ${textAttrs}>${esc(state.pointText)}</text></g>`;}}
-  let logo=''; if(state.logoVisible){const logoR=stageUnits($('#logoWrap').getBoundingClientRect());logo=`<image href="${logoDataForExport()}" x="${logoR.x.toFixed(2)}" y="${logoR.y.toFixed(2)}" width="${logoR.w.toFixed(2)}" height="${logoR.h.toFixed(2)}" preserveAspectRatio="xMidYMid meet"/>`;}
+  let logo=''; if(state.logoVisible){const logoR=stageUnits($('#logoWrap').getBoundingClientRect());logo=logoMarkupForExport(logoR);}
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900"><rect width="1600" height="900" fill="${state.frameColor}"/>${bg}${under}${svgTextCenters('.title-text',lastFit.title,700,.018,state.textColor)}${svgTextCenters('.subtitle-text',lastFit.subtitle,600,.028,state.textColor)}${point}${logo}</svg>`;
 }
 function exportFilename(){
@@ -653,8 +662,47 @@ function exportFilename(){
   if(base.length>80)base=base.slice(0,80).trim();
   return `${base}_${stamp}.png`;
 }
+function canvasToPngBlob(canvas){
+  return new Promise((resolve,reject)=>{
+    try{
+      canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('PNG blob generation failed')),'image/png');
+    }catch(err){reject(err)}
+  });
+}
 async function exportPng(){
-  try{await document.fonts.ready;reflow();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));const svg=buildExportSvg();const blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});const url=URL.createObjectURL(blob);const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=url});const c=document.createElement('canvas');c.width=1600;c.height=900;const ctx=c.getContext('2d');ctx.drawImage(img,0,0,1600,900);URL.revokeObjectURL(url);c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=exportFilename();a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)},'image/png');toast('PNGを書き出しました')}catch(e){console.error(e);toast('書き出しに失敗しました')}
+  try{
+    await document.fonts.ready;
+    reflow();
+    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+    const svg=buildExportSvg();
+    const url='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+    const img=new Image();
+    await new Promise((resolve,reject)=>{
+      img.onload=()=>resolve();
+      img.onerror=()=>reject(new Error('Export SVG could not be rendered'));
+      img.src=url;
+    });
+    const c=document.createElement('canvas');
+    c.width=1600;
+    c.height=900;
+    const ctx=c.getContext('2d');
+    if(!ctx)throw new Error('Canvas 2D context unavailable');
+    ctx.drawImage(img,0,0,1600,900);
+    const pngBlob=await canvasToPngBlob(c);
+    const downloadUrl=URL.createObjectURL(pngBlob);
+    const a=document.createElement('a');
+    a.href=downloadUrl;
+    a.download=exportFilename();
+    a.style.display='none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(downloadUrl),1500);
+    toast('PNGを書き出しました');
+  }catch(e){
+    console.error('PATHOS Thumbnail Studio export error',e);
+    toast('書き出しに失敗しました');
+  }
 }
 
 // Events
