@@ -90,7 +90,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .subtitle-text{display:block;line-height:1.35;white-space:nowrap}
 .logo-zone{position:absolute;left:var(--safe-x);right:var(--safe-x);bottom:40px;display:flex;justify-content:center;align-items:flex-end;min-height:1px;z-index:3}
 .logo-wrap{width:190px;line-height:0;display:flex;justify-content:center;align-items:flex-end}
-.logo-wrap svg,.logo-wrap img{display:block;max-width:100%;max-height:72px;width:100%;height:auto;object-fit:contain}
+.logo-wrap svg,.logo-wrap img{display:block;max-width:100%;width:100%;height:auto;object-fit:contain}
+.logo-wrap>svg{max-height:72px}
+.logo-wrap>img{max-height:none}
 .logo-wrap svg path,.logo-wrap svg polygon:not([fill]){fill:currentColor}
 .logo-wrap svg polygon[fill="#ABED00"]{fill:#ABED00}
 
@@ -457,7 +459,25 @@ function rgbToHex(r,g,b){const h=n=>Number(n).toString(16).padStart(2,'0').toUpp
 function rgbToHsv(r,g,b){r/=255;g/=255;b/=255;const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;let h=0;if(d){if(max===r)h=((g-b)/d)%6;else if(max===g)h=(b-r)/d+2;else h=(r-g)/d+4;h*=60;if(h<0)h+=360}return {h,s:max===0?0:d/max,v:max}}
 function hsvToRgb(h,s,v){const c=v*s,x=c*(1-Math.abs((h/60)%2-1)),m=v-c;let r=0,g=0,b=0;if(h<60){r=c;g=x}else if(h<120){r=x;g=c}else if(h<180){g=c;b=x}else if(h<240){g=x;b=c}else if(h<300){r=x;b=c}else{r=c;b=x}return {r:Math.round((r+m)*255),g:Math.round((g+m)*255),b:Math.round((b+m)*255)}}
 function hueColor(h){const rgb=hsvToRgb((h+360)%360,1,1);return rgbToHex(rgb.r,rgb.g,rgb.b)}
-function syncColorPickerUI(){const color=normalizeHex(state[activeColorKey]||'#ABED00');const prev=$('#pickerPreview');if(prev)prev.style.background=color;const hex=$('#pickerHex');if(hex&&document.activeElement!==hex)hex.value=color;const rgb=hexToRgb(color);pickerHSV=rgbToHsv(rgb.r,rgb.g,rgb.b);[['R',rgb.r],['G',rgb.g],['B',rgb.b]].forEach(([k,val])=>{const r=$('#picker'+k),n=$('#picker'+k+'Num');if(r)r.value=val;if(n&&document.activeElement!==n)n.value=val});const sv=$('#pickerSV'),svt=$('#pickerSVThumb'),hue=$('#pickerHueThumb');if(sv)sv.style.setProperty('--picker-hue',hueColor(pickerHSV.h));if(svt){svt.style.left=(pickerHSV.s*100)+'%';svt.style.top=((1-pickerHSV.v)*100)+'%'}if(hue)hue.style.top=(pickerHSV.h/360*100)+'%';const empty=$('#pickerPaletteEmpty');if(empty)empty.hidden=savedColors.length>0}
+function syncColorPickerUI(){
+  const color=normalizeHex(state[activeColorKey]||'#ABED00');
+  const prev=$('#pickerPreview');if(prev)prev.style.background=color;
+  const hex=$('#pickerHex');if(hex&&document.activeElement!==hex)hex.value=color;
+  const rgb=hexToRgb(color), nextHSV=rgbToHsv(rgb.r,rgb.g,rgb.b);
+  if(nextHSV.v===0){
+    pickerHSV={h:pickerHSV.h,s:pickerHSV.s,v:0};
+  }else if(nextHSV.s===0){
+    pickerHSV={h:pickerHSV.h,s:0,v:nextHSV.v};
+  }else{
+    pickerHSV=nextHSV;
+  }
+  [['R',rgb.r],['G',rgb.g],['B',rgb.b]].forEach(([k,val])=>{const r=$('#picker'+k),n=$('#picker'+k+'Num');if(r)r.value=val;if(n&&document.activeElement!==n)n.value=val});
+  const sv=$('#pickerSV'),svt=$('#pickerSVThumb'),hue=$('#pickerHueThumb');
+  if(sv)sv.style.setProperty('--picker-hue',hueColor(pickerHSV.h));
+  if(svt){svt.style.left=(pickerHSV.s*100)+'%';svt.style.top=((1-pickerHSV.v)*100)+'%'}
+  if(hue)hue.style.top=(pickerHSV.h/360*100)+'%';
+  const empty=$('#pickerPaletteEmpty');if(empty)empty.hidden=savedColors.length>0;
+}
 function syncColorSummary(key){
   if(!key)return;
   const txt=$('#'+key+'Text'),sw=$('#'+key+'Swatch');
@@ -514,13 +534,25 @@ function deriveMetrics(titleSize, subtitleSize){
   };
 }
 function lines(text){ const a=String(text||'').split(/\r?\n/); return a.length?a:['']; }
+let renderedLogoKey='';
 function renderLogo(){
   const zone=$('#logoZone'), wrap=$('#logoWrap');
   zone.hidden=!state.logoVisible;
   wrap.style.width=state.logoWidth+'px'; wrap.style.color='#111111';
-  if(!state.logoVisible){ wrap.innerHTML=''; updateOpticalLayout(); return; }
-  if(state.logoKind==='custom'&&state.logoData){wrap.innerHTML=`<img alt="logo" src="${state.logoData}">`;}
-  else {wrap.innerHTML=DEFAULT_LOGO_SVG;}
+  if(!state.logoVisible){wrap.innerHTML='';renderedLogoKey='';updateOpticalLayout();return;}
+  const nextKey=state.logoKind==='custom'&&state.logoData?'custom:'+state.logoData:'default';
+  if(nextKey!==renderedLogoKey){
+    if(state.logoKind==='custom'&&state.logoData){
+      const img=document.createElement('img');
+      img.alt='logo';
+      img.onload=updateOpticalLayout;
+      img.src=state.logoData;
+      wrap.replaceChildren(img);
+    }else{
+      wrap.innerHTML=DEFAULT_LOGO_SVG;
+    }
+    renderedLogoKey=nextKey;
+  }
   requestAnimationFrame(updateOpticalLayout);
 }
 function updateOpticalLayout(){
