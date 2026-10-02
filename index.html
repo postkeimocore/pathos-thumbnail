@@ -296,7 +296,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
 </div></div>
 </section>
 <section class="tab-panel" data-panel="style">
-<div class="tuning-group color-accordion open active-color" data-color-group="frameColor">
+<div class="tuning-group color-accordion" data-color-group="frameColor">
 <button class="tuning-head" data-color-accordion-key="frameColor" type="button"><span class="tuning-label"><span class="color-head-chip" id="frameColorSwatch" style="background:#ABED00"></span><span>外枠</span><span class="color-head-value" id="frameColorText">#ABED00</span></span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span></button>
 <div class="tuning-body"><div class="inline-picker-host" data-color-host="frameColor"><div class="inline-color-picker" id="inlineColorPicker">
       <div class="picker-preview-row"><div class="picker-preview-swatch" id="pickerPreview"></div><div class="picker-preview-meta"><input class="text-input picker-hex" id="pickerHex" maxlength="7" value="#ABED00"/></div></div>
@@ -318,11 +318,9 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
   <div class="color-option"><button class="color-field" data-color-key="subtitleColor" type="button"><span class="color-chip" id="subtitleColorSwatch" style="background:#111111"></span><span class="color-field-copy"><span class="color-field-label">補足テキスト</span><span class="color-field-value" id="subtitleColorText">#111111</span></span></button><div class="inline-picker-host" data-color-host="subtitleColor"></div></div>
   <div class="color-option"><button class="color-field" data-color-key="pointTextColor" type="button"><span class="color-chip" id="pointTextColorSwatch" style="background:#111111"></span><span class="color-field-copy"><span class="color-field-label">ポイントテキスト</span><span class="color-field-value" id="pointTextColorText">#111111</span></span></button><div class="inline-picker-host" data-color-host="pointTextColor"></div></div>
 </div></div>
-</div><div class="tuning-group color-section">
-<button class="tuning-head" type="button"><span class="tuning-label"><span class="tuning-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect height="12" rx="6" width="18" x="3" y="6"></rect><path d="M8 12h8"></path></svg></span>ポイント枠</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span></button>
-<div class="tuning-body"><div class="color-options">
-  <div class="color-option"><button class="color-field" data-color-key="pointBgColor" type="button"><span class="color-chip" id="pointBgColorSwatch" style="background:#ABED00"></span><span class="color-field-copy"><span class="color-field-label">色</span><span class="color-field-value" id="pointBgColorText">#ABED00</span></span></button><div class="inline-picker-host" data-color-host="pointBgColor"></div></div>
-</div></div>
+</div><div class="tuning-group color-accordion" data-color-group="pointBgColor">
+<button class="tuning-head" data-color-accordion-key="pointBgColor" type="button"><span class="tuning-label"><span class="color-head-chip" id="pointBgColorSwatch" style="background:#ABED00"></span><span>ポイント枠</span><span class="color-head-value" id="pointBgColorText">#ABED00</span></span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span></button>
+<div class="tuning-body"><div class="inline-picker-host" data-color-host="pointBgColor"></div></div>
 </div><div class="tuning-group color-accordion" data-color-group="accentColor">
 <button class="tuning-head" data-color-accordion-key="accentColor" type="button"><span class="tuning-label"><span class="color-head-chip" id="accentColorSwatch" style="background:#ABED00"></span><span>強調線</span><span class="color-head-value" id="accentColorText">#ABED00</span></span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span></button>
 <div class="tuning-body"><div class="inline-picker-host" data-color-host="accentColor"></div></div>
@@ -405,8 +403,12 @@ function saveColorPalette(){
 }
 function setActiveColorKey(key){
   activeColorKey=key;
-  $$('.color-accordion').forEach(el=>el.classList.toggle('active-color',el.dataset.colorGroup===key));
-  $$('[data-color-key]').forEach(el=>el.classList.toggle('active-color',el.dataset.colorKey===key));
+  const picker=$('#inlineColorPicker');
+  $$('.color-accordion').forEach(el=>el.classList.toggle('active-color',el.dataset.colorGroup===key&&el.classList.contains('open')));
+  $$('[data-color-key]').forEach(el=>{
+    const host=$(`[data-color-host="${el.dataset.colorKey}"]`);
+    el.classList.toggle('active-color',el.dataset.colorKey===key&&picker&&host&&picker.parentElement===host);
+  });
 }
 function closeColorControl(){
   const picker=$('#inlineColorPicker'),parking=$('#colorPickerParking');
@@ -471,7 +473,20 @@ function rgbToHsv(r,g,b){r/=255;g/=255;b/=255;const max=Math.max(r,g,b),min=Math
 function hsvToRgb(h,s,v){const c=v*s,x=c*(1-Math.abs((h/60)%2-1)),m=v-c;let r=0,g=0,b=0;if(h<60){r=c;g=x}else if(h<120){r=x;g=c}else if(h<180){g=c;b=x}else if(h<240){g=x;b=c}else if(h<300){r=x;b=c}else{r=c;b=x}return {r:Math.round((r+m)*255),g:Math.round((g+m)*255),b:Math.round((b+m)*255)}}
 function hueColor(h){const rgb=hsvToRgb((h+360)%360,1,1);return rgbToHex(rgb.r,rgb.g,rgb.b)}
 function syncColorPickerUI(){const color=normalizeHex(state[activeColorKey]||'#ABED00');const meta={frameColor:'外枠',panelColor:'メインエリア',titleColor:'見出しテキスト',subtitleColor:'補足テキスト',pointBgColor:'ポイント枠ボックス',pointTextColor:'ポイントテキスト',accentColor:'強調線'};const prev=$('#pickerPreview');if(prev)prev.style.background=color;const hex=$('#pickerHex');if(hex&&document.activeElement!==hex)hex.value=color;const rgb=hexToRgb(color);pickerHSV=rgbToHsv(rgb.r,rgb.g,rgb.b);[['R',rgb.r],['G',rgb.g],['B',rgb.b]].forEach(([k,val])=>{const r=$('#picker'+k),n=$('#picker'+k+'Num');if(r)r.value=val;if(n&&document.activeElement!==n)n.value=val});const sv=$('#pickerSV'),svt=$('#pickerSVThumb'),hue=$('#pickerHueThumb');if(sv)sv.style.setProperty('--picker-hue',hueColor(pickerHSV.h));if(svt){svt.style.left=(pickerHSV.s*100)+'%';svt.style.top=((1-pickerHSV.v)*100)+'%'}if(hue)hue.style.top=(pickerHSV.h/360*100)+'%';const empty=$('#pickerPaletteEmpty');if(empty)empty.hidden=savedColors.length>0}
-function applyPickerColor(color){color=normalizeHex(color);if(!/^#[0-9A-F]{6}$/.test(color))return;state[activeColorKey]=color;syncControls();reflow();syncColorPickerUI()}
+function syncColorSummary(key){
+  if(!key)return;
+  const txt=$('#'+key+'Text'),sw=$('#'+key+'Swatch');
+  if(sw)sw.style.background=state[key];
+  if(txt)txt.textContent=String(state[key]||'').toUpperCase();
+}
+function applyPickerColor(color){
+  color=normalizeHex(color);
+  if(!activeColorKey||!/^#[0-9A-F]{6}$/.test(color))return;
+  state[activeColorKey]=color;
+  syncColorSummary(activeColorKey);
+  reflow();
+  syncColorPickerUI();
+}
 function applyHSV(h,s,v){pickerHSV={h:(h+360)%360,s:clamp(0,s,1),v:clamp(0,v,1)};const rgb=hsvToRgb(pickerHSV.h,pickerHSV.s,pickerHSV.v);applyPickerColor(rgbToHex(rgb.r,rgb.g,rgb.b))}
 function beginColorInteraction(){if(!colorInteractionSnap)colorInteractionSnap=snapshotState()}
 function endColorInteraction(){if(colorInteractionSnap&&!sameState(colorInteractionSnap,state))pushHistory(colorInteractionSnap);colorInteractionSnap=null}
@@ -838,7 +853,7 @@ async function exportPng(){
 // Events
 $$('.phase-tab,.mobile-tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
 $$('.tuning-head').forEach(h=>{if(h.dataset.colorAccordionKey)return;h.addEventListener('click',()=>{const group=h.parentElement;const willClose=group.classList.contains('open');group.classList.toggle('open');if(willClose&&group.classList.contains('color-section')&&group.querySelector('#inlineColorPicker'))closeColorControl()})});
-$$('[data-color-accordion-key]').forEach(h=>h.addEventListener('click',()=>{const key=h.dataset.colorAccordionKey,group=h.closest('.color-accordion'),wasOpen=group.classList.contains('open');if(wasOpen){group.classList.remove('open')}else{activateColorAccordion(key,true)}}));
+$$('[data-color-accordion-key]').forEach(h=>h.addEventListener('click',()=>{const key=h.dataset.colorAccordionKey,group=h.closest('.color-accordion'),wasOpen=group.classList.contains('open');if(wasOpen){group.classList.remove('open');if(group.querySelector('#inlineColorPicker'))closeColorControl();setActiveColorKey(activeColorKey)}else{activateColorAccordion(key,true)}}));
 $$('[data-color-key]').forEach(b=>b.addEventListener('click',()=>{const key=b.dataset.colorKey;$$('.color-accordion').forEach(g=>g.classList.remove('open'));toggleColorControl(key)}));
 
 function bindTextHistory(id,key){
@@ -857,11 +872,11 @@ $('#underlineSwitch').addEventListener('click',()=>toggleState('underlineVisible
 $('#logoSwitch').addEventListener('click',()=>toggleState('logoVisible'));
 $$('[data-point-style]').forEach(b=>b.addEventListener('click',()=>{if(state.pointStyle===b.dataset.pointStyle)return;const before=snapshotState();state.pointStyle=b.dataset.pointStyle;syncControls();reflow();pushHistory(before)}));
 $$('[data-bg]').forEach(b=>b.addEventListener('click',()=>{if(state.background===b.dataset.bg)return;const before=snapshotState();state.background=b.dataset.bg;syncControls();reflow();pushHistory(before)}));
-activateColorAccordion('frameColor',true);
+closeColorControl();
 let hexStartSnap=null;$('#pickerHex').addEventListener('focus',()=>{hexStartSnap=snapshotState()});$('#pickerHex').addEventListener('input',e=>{let v=e.target.value.trim().toUpperCase();if(v&&!v.startsWith('#'))v='#'+v;e.target.value=v;if(/^#[0-9A-F]{6}$/.test(v))applyPickerColor(v)});$('#pickerHex').addEventListener('blur',()=>{if(hexStartSnap&&!sameState(hexStartSnap,state))pushHistory(hexStartSnap);hexStartSnap=null});
 [['R','r'],['G','g'],['B','b']].forEach(([id,key])=>{const range=$('#picker'+id),num=$('#picker'+id+'Num');let snap=null;const begin=()=>{if(!snap)snap=snapshotState()};const update=v=>{const rgb=hexToRgb(state[activeColorKey]||'#ABED00');rgb[key]=clamp(0,Number(v)||0,255);applyPickerColor(rgbToHex(rgb.r,rgb.g,rgb.b))};const end=()=>{if(snap&&!sameState(snap,state))pushHistory(snap);snap=null};range.addEventListener('pointerdown',begin);range.addEventListener('input',e=>update(e.target.value));range.addEventListener('change',end);range.addEventListener('pointerup',end);num.addEventListener('focus',begin);num.addEventListener('input',e=>update(e.target.value));num.addEventListener('change',end);num.addEventListener('blur',end)});
 $('#colorPaletteAdd').addEventListener('click',()=>{addSavedColor(state[activeColorKey]||'#ABED00')});
-$$('[data-color-picker-close]').forEach(el=>el.addEventListener('click',closeColorPicker));
+$$('[data-color-picker-close]').forEach(el=>el.addEventListener('click',closeColorControl));
 bindPointerPlane($('#pickerSV'),e=>{const r=$('#pickerSV').getBoundingClientRect();const s=clamp(0,(e.clientX-r.left)/r.width,1);const v=1-clamp(0,(e.clientY-r.top)/r.height,1);applyHSV(pickerHSV.h,s,v)});
 bindPointerPlane($('#pickerHue'),e=>{const r=$('#pickerHue').getBoundingClientRect();const h=clamp(0,(e.clientY-r.top)/r.height,1)*360;applyHSV(h,pickerHSV.s,pickerHSV.v)});
 $('#colorPaletteList').addEventListener('pointerdown',e=>{if(e.target.closest('[data-delete-color]'))e.stopPropagation()});
@@ -884,7 +899,7 @@ if(window.visualViewport)visualViewport.addEventListener('resize',()=>{resizeSta
 window.addEventListener('pageshow',()=>{if(innerWidth<900)previewZoom=1;reflow();resizeStage();updateStickyMetrics()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(innerWidth<900)previewZoom=1;requestAnimationFrame(()=>{reflow();resizeStage();updateStickyMetrics()})}});
 function initApp(){
-  renderColorPalette();activateColorAccordion(activeColorKey||'frameColor',true);syncControls();reflow();resizeStage();updateStickyMetrics();updateHistoryButtons();
+  renderColorPalette();$$('.color-accordion,.color-section').forEach(g=>g.classList.remove('open'));closeColorControl();syncControls();reflow();resizeStage();updateStickyMetrics();updateHistoryButtons();
   requestAnimationFrame(()=>{reflow();resizeStage();updateStickyMetrics()});
   if('ResizeObserver' in window){
     const stageResizeObserver=new ResizeObserver(()=>{resizeStage();updateStickyMetrics()});stageResizeObserver.observe($('#stageViewport'));
