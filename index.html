@@ -266,6 +266,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
 <div class="tuning-group">
 <button class="tuning-head"><span class="tuning-label"><span class="tuning-icon"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9"></path></svg></span>補足テキスト</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span></button>
 <div class="tuning-body">
+<div class="field"><div class="switch-row"><div class="field-label">表示</div><button aria-pressed="true" class="switch on" id="subtitleSwitch" type="button"></button></div></div>
 <label class="field"><span class="field-label">テキスト</span><textarea class="textarea" id="subtitleInput" placeholder="補足を入力"></textarea></label>
 <div class="field"><span class="field-label">文字サイズ</span><div class="range-row"><button class="slider-step slider-step-minus" type="button" data-step-key="subtitleSize" data-step-dir="-1" aria-label="8px減らす"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button><input id="subtitleSize" max="80" min="24" step="1" type="range" value="48"/><button class="slider-step slider-step-plus" type="button" data-step-key="subtitleSize" data-step-dir="1" aria-label="8px増やす"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><input class="number-input" id="subtitleSizeNum" max="80" min="24" step="1" type="number" value="48"/><button aria-label="初期値に戻す" class="param-reset" data-reset="subtitleSize" title="初期値に戻す" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button></div></div>
 </div></div>
@@ -348,7 +349,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
 const DEFAULT_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560.87 134.81" role="img" aria-label="PATHOS"><path d="M135.86,134.81h-15.67V28.66L16.16,66.52v68.29H6.27c-3.46,0-6.27-2.81-6.27-6.27V53.44c0-2.64,1.65-4.99,4.13-5.89L133.71.38c4.09-1.49,8.41,1.54,8.41,5.89v122.26c0,3.46-2.81,6.27-6.27,6.27Z"/><polygon fill="#ABED00" points="16.16 58.65 38.52 60.05 38.52 126 16.16 134.81 16.16 58.65"/><path d="M213.54,49.19h-23.35v60.42h7.94v-21.22h14.31c12.43,0,24.96-6.15,24.96-20.05,0-11.64-9.37-19.16-23.86-19.16ZM229.46,68.59v.16c0,7.43-6.58,12.22-16.77,12.22h-14.56v-24.37h15.07c4.89,0,16.26,1.17,16.26,11.98Z"/><polygon points="269.38 48.79 239.97 109.62 248.48 109.62 272.52 59.27 296.49 109.62 305.25 109.62 275.84 48.79 269.38 48.79"/><polygon points="306.46 56.62 327.2 56.62 327.2 109.62 335.14 109.62 335.14 56.62 355.88 56.62 355.88 49.19 306.46 49.19 306.46 56.62"/><polygon points="413.38 75.53 378.82 75.53 378.82 49.19 370.88 49.19 370.88 109.62 378.82 109.62 378.82 82.95 413.38 82.95 413.38 109.62 421.32 109.62 421.32 49.19 413.38 49.19 413.38 75.53"/><path d="M501.29,78.48c-.39-17.31-13.83-30.26-31.58-30.26s-31.76,13.7-31.76,31.35,13.58,31.03,31.59,31.03,31.36-13.31,31.76-30.44l.07-.83-.06-.84h-.01ZM493.19,79.41v.16c0,13.5-10.1,23.69-23.48,23.69s-23.66-10.48-23.66-24.01,10.1-23.68,23.48-23.68,23.66,10.48,23.66,23.85Z"/><path d="M539.9,75.57c-14.72-2.88-15.92-6.56-15.92-10.87,0-5.2,5.37-8.97,12.78-8.97,6.47,0,11.6,1.86,16.64,6.02l1.34,1.11,5.11-6.07-1.46-1.12c-6.73-5.17-12.95-7.27-21.47-7.27-11.91,0-20.89,7.19-20.89,16.88s6.43,14.83,21.49,17.74c14.24,2.74,15.4,6.33,15.4,10.55,0,5.62-5.46,9.54-13.29,9.54s-13.63-2.25-20.17-8.01l-1.3-1.14-5.28,5.79,1.38,1.18c7.71,6.59,15.46,9.53,25.11,9.53,12.65,0,21.48-7.11,21.48-17.45,0-9.22-6.47-14.59-20.97-17.42Z"/></svg>`;
 
 const defaults = {
-  title:'', subtitle:'', pointText:'', pointVisible:true,
+  title:'', subtitle:'', subtitleVisible:true, pointText:'', pointVisible:true,
   titleSize:80, subtitleSize:48, pointSize:40, pointStyle:'box', background:'square', pointRadius:16, underlineVisible:true,
   frameColor:'#ABED00', panelColor:'#F6F6F2', textColor:'#111111', accentColor:'#ABED00',
   logoWidth:192, logoVisible:true, logoKind:'default', logoData:null
@@ -493,7 +494,7 @@ function renderLogo(){
   wrap.style.width=state.logoWidth+'px'; wrap.style.color=state.textColor;
   if(!state.logoVisible){ wrap.innerHTML=''; updateOpticalLayout(); return; }
   if(state.logoKind==='custom'&&state.logoData){wrap.innerHTML=`<img alt="logo" src="${state.logoData}">`;}
-  else {wrap.innerHTML=DEFAULT_LOGO_SVG; const poly=wrap.querySelector('polygon[fill="#ABED00"]'); if(poly) poly.setAttribute('fill',state.accentColor);}
+  else {wrap.innerHTML=DEFAULT_LOGO_SVG;}
   requestAnimationFrame(updateOpticalLayout);
 }
 function updateOpticalLayout(){
@@ -548,6 +549,7 @@ function renderTextLines(){
   const subtitleRows=wrappedLines(subtitleDisplay,state.subtitleSize,600,.028);
   $('#titleLines').innerHTML=titleRows.map(x=>`<span class="title-line"><span class="title-text">${esc(x)||'&nbsp;'}</span><span class="title-underline"></span></span>`).join('');
   $('#subtitleLines').innerHTML=subtitleRows.map(x=>`<span class="subtitle-line"><span class="subtitle-text">${esc(x)||'&nbsp;'}</span></span>`).join('');
+  $('#subtitleLines').hidden=!state.subtitleVisible;
   $('#pointText').textContent=pointDisplay; const pointEl=$('#pointLabel'); pointEl.hidden=!state.pointVisible; pointEl.dataset.style=state.pointStyle;
 }
 function applyVisualState(){
@@ -556,9 +558,8 @@ function applyVisualState(){
   $('#bgCircleFill').style.background=state.panelColor; $('#bgCircleOutline').style.borderColor=state.panelColor; $('#bgCircleOutline').style.borderWidth='8px';
   $('#bgCircleFill').hidden=state.background!=='circle'; $('#bgCircleOutline').hidden=state.background!=='circle';
   $('.title-lines').style.color=state.textColor; $('.subtitle-lines').style.color=state.textColor;
-  document.documentElement.style.setProperty('--ui-accent',state.accentColor);
   $$('.title-underline').forEach(el=>{el.style.background=state.accentColor;el.hidden=!state.underlineVisible});
-  const point=$('#pointLabel'); point.style.background=state.accentColor; point.style.color=state.textColor; point.style.setProperty('--point-radius',state.pointRadius+'px'); point.dataset.style=state.pointStyle;
+  const point=$('#pointLabel'); point.style.background='#ABED00'; point.style.color=state.textColor; point.style.setProperty('--point-radius',state.pointRadius+'px'); point.dataset.style=state.pointStyle;
   renderLogo();
 }
 function setMetricVars(m){
@@ -598,7 +599,7 @@ function syncControls(){
   const nums=[['titleSize',state.titleSize],['subtitleSize',state.subtitleSize],['pointSize',state.pointSize],['pointRadius',state.pointRadius],['logoSize',state.logoWidth]];
   nums.forEach(([id,v])=>{const el=$('#'+id),num=$('#'+id+'Num');if(el)el.value=v;if(num&&document.activeElement!==num)num.value=v});
   [['frameColor','frameColor'],['panelColor','panelColor'],['textColor','textColor'],['accentColor','accentColor']].forEach(([id,k])=>{const txt=$('#'+id+'Text'),sw=$('#'+id+'Swatch');if(sw)sw.style.background=state[k];if(txt)txt.textContent=state[k].toUpperCase()}); if($('#inlineColorPicker'))syncColorPickerUI();
-  setSwitch('#pointSwitch',state.pointVisible);setSwitch('#underlineSwitch',state.underlineVisible);setSwitch('#logoSwitch',state.logoVisible);
+  setSwitch('#subtitleSwitch',state.subtitleVisible);setSwitch('#pointSwitch',state.pointVisible);setSwitch('#underlineSwitch',state.underlineVisible);setSwitch('#logoSwitch',state.logoVisible);
   $$('[data-bg]').forEach(b=>b.classList.toggle('active',b.dataset.bg===state.background));
   $$('[data-point-style]').forEach(b=>b.classList.toggle('active',b.dataset.pointStyle===state.pointStyle));
   const pr=$('#pointRadiusField');if(pr)pr.hidden=state.pointStyle==='bracket';
@@ -683,7 +684,7 @@ function drawDefaultLogoToCanvas(ctx,logoR){
   ctx.scale(scale,scale);
   doc.querySelectorAll('path,polygon').forEach(el=>{
     const isAccent=String(el.getAttribute('fill')||'').toUpperCase()==='#ABED00';
-    ctx.fillStyle=isAccent?state.accentColor:state.textColor;
+    ctx.fillStyle=isAccent?'#ABED00':state.textColor;
     if(el.tagName.toLowerCase()==='path'){
       ctx.fill(new Path2D(el.getAttribute('d')||''));
     }else{
@@ -771,7 +772,7 @@ async function exportPng(){
     }
 
     drawTextElementsToCanvas(ctx,'.title-text',lastFit.title,700,.018,state.textColor);
-    drawTextElementsToCanvas(ctx,'.subtitle-text',lastFit.subtitle,600,.028,state.textColor);
+    if(state.subtitleVisible) drawTextElementsToCanvas(ctx,'.subtitle-text',lastFit.subtitle,600,.028,state.textColor);
 
     if(state.pointVisible){
       const r=stageUnits($('#pointLabel').getBoundingClientRect());
@@ -779,7 +780,7 @@ async function exportPng(){
       if(state.pointStyle==='bracket'){
         drawTrackedText(ctx,`【${state.pointText||'ポイントテキスト'}】`,cx,cy,state.pointSize,800,.04,state.textColor);
       }else{
-        ctx.fillStyle=state.accentColor;
+        ctx.fillStyle='#ABED00';
         canvasRoundRect(ctx,r.x,r.y,r.w,r.h,Math.min(state.pointRadius,r.h/2));
         ctx.fill();
         if(state.pointStyle==='speech'){
@@ -823,6 +824,7 @@ bindTextHistory('titleInput','title');bindTextHistory('subtitleInput','subtitle'
 bindRange('titleSize','titleSize',48,128);bindRange('subtitleSize','subtitleSize',24,80);bindRange('pointSize','pointSize',24,56);bindRange('pointRadius','pointRadius',0,48);bindRange('logoSize','logoWidth',112,320);
 $$('[data-step-key]').forEach(btn=>btn.addEventListener('click',()=>stepByEight(btn.dataset.stepKey,Number(btn.dataset.stepDir))));
 function toggleState(key){const before=snapshotState();state[key]=!state[key];syncControls();reflow();pushHistory(before)}
+$('#subtitleSwitch').addEventListener('click',()=>toggleState('subtitleVisible'));
 $('#pointSwitch').addEventListener('click',()=>toggleState('pointVisible'));
 $('#underlineSwitch').addEventListener('click',()=>toggleState('underlineVisible'));
 $('#logoSwitch').addEventListener('click',()=>toggleState('logoVisible'));
