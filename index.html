@@ -157,6 +157,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
 .color-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .color-field{width:100%;display:flex;align-items:center;gap:10px;border:1px solid var(--ui-border);background:#fff;border-radius:12px;padding:7px 8px;text-align:left;-webkit-tap-highlight-color:transparent}.color-field span{font:10px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ui-muted)}
 .color-chip{width:26px;height:26px;border-radius:8px;border:1px solid rgba(17,17,17,.12);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);flex:0 0 auto;background:#ABED00}
+.color-options{display:flex;flex-direction:column;gap:8px}.color-option{min-width:0}.color-field.active-color{border-color:#9DBC4C;box-shadow:0 0 0 2px rgba(171,237,0,.12)}.color-field-copy{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:1 1 auto;min-width:0}.color-field .color-field-label{font-family:inherit;font-size:11px;font-weight:650;color:var(--ui-text)}.color-field .color-field-value{font:10px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ui-muted);font-weight:500}.color-option .inline-picker-host:not(:empty){margin-top:10px;padding:10px;border:1px solid var(--ui-border-soft);border-radius:12px;background:#fff}
 .color-accordion .tuning-label{gap:10px}.color-head-chip{width:18px;height:18px;border-radius:6px;border:1px solid rgba(17,17,17,.12);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);flex:0 0 auto;background:#ABED00}.color-head-value{font:10px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ui-muted);font-weight:500}.inline-picker-host{width:100%}.inline-color-picker{display:flex;flex-direction:column;gap:16px}.picker-preview-row{display:flex;align-items:center;gap:12px}.picker-preview-swatch{width:46px;height:46px;border-radius:13px;border:1px solid rgba(17,17,17,.12);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);background:#ABED00;flex:0 0 auto}.picker-preview-meta{display:flex;flex-direction:column;gap:7px;min-width:0;flex:1 1 auto}.picker-hex{text-transform:uppercase;font:12px ui-monospace,SFMono-Regular,Menlo,monospace}.picker-main{display:grid;grid-template-columns:minmax(0,1fr) 26px;gap:10px;align-items:stretch}.sv-area{position:relative;aspect-ratio:1.45/1;border-radius:13px;overflow:hidden;touch-action:none;background:var(--picker-hue,#ff0000);border:1px solid rgba(17,17,17,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}.sv-area::before,.sv-area::after{content:"";position:absolute;inset:0}.sv-area::before{background:linear-gradient(to right,#fff,rgba(255,255,255,0))}.sv-area::after{background:linear-gradient(to top,#000,rgba(0,0,0,0))}.sv-thumb{position:absolute;width:18px;height:18px;border:3px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.45);transform:translate(-50%,-50%);z-index:3;pointer-events:none}.hue-area{position:relative;border-radius:999px;touch-action:none;background:linear-gradient(to bottom,#f00 0%,#ff0 16.66%,#0f0 33.33%,#0ff 50%,#00f 66.66%,#f0f 83.33%,#f00 100%);border:1px solid rgba(17,17,17,.08);min-height:170px}.hue-thumb{position:absolute;left:50%;width:32px;height:12px;border:3px solid #fff;border-radius:999px;box-shadow:0 1px 4px rgba(0,0,0,.38);transform:translate(-50%,-50%);z-index:2;pointer-events:none}.picker-rgb{display:grid;gap:10px}.picker-channel{display:grid;grid-template-columns:18px minmax(0,1fr) 56px;align-items:center;gap:10px}.picker-channel-label{font-size:11px;font-weight:700;color:var(--ui-muted);text-align:center}.picker-channel .number-input{width:56px}.picker-palette{padding-top:2px;border-top:1px dashed var(--ui-border-soft)}.picker-palette-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 8px}.picker-palette .palette-strip{margin-top:0}.picker-palette .palette-list{padding-right:8px}.picker-palette .palette-add{order:-1}.picker-palette-empty{font-size:10px;color:var(--ui-dim);padding:8px 0}.color-accordion.active-color .tuning-head{color:var(--ui-text)}
 @media (max-width:899px){.picker-main{grid-template-columns:minmax(0,1fr) 24px}.sv-area{aspect-ratio:1.32/1}.hue-area{min-height:160px}.inline-color-picker{gap:14px}}
 .upload{display:flex;flex-direction:column;gap:8px}.upload-btn{height:42px;border:1px dashed #C9CDD7;background:#fff;border-radius:12px;color:var(--ui-muted);font-size:11px;font-weight:650;display:flex;align-items:center;justify-content:center;gap:7px}.upload-btn svg{width:14px;height:14px;stroke:currentColor;flex:0 0 auto}.upload-btn:hover{border-color:#9DB75C;color:var(--ui-text)}
@@ -310,9 +311,18 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
 </div><div class="tuning-group color-accordion" data-color-group="panelColor">
 <button class="tuning-head" data-color-accordion-key="panelColor" type="button"><span class="tuning-label"><span class="color-head-chip" id="panelColorSwatch" style="background:#F6F6F2"></span><span>メインエリア</span><span class="color-head-value" id="panelColorText">#F6F6F2</span></span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span></button>
 <div class="tuning-body"><div class="inline-picker-host" data-color-host="panelColor"></div></div>
-</div><div class="tuning-group color-accordion" data-color-group="textColor">
-<button class="tuning-head" data-color-accordion-key="textColor" type="button"><span class="tuning-label"><span class="color-head-chip" id="textColorSwatch" style="background:#111111"></span><span>テキスト</span><span class="color-head-value" id="textColorText">#111111</span></span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span></button>
-<div class="tuning-body"><div class="inline-picker-host" data-color-host="textColor"></div></div>
+</div><div class="tuning-group color-section">
+<button class="tuning-head" type="button"><span class="tuning-label"><span class="tuning-icon type-icon">Aa</span>テキスト</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span></button>
+<div class="tuning-body"><div class="color-options">
+  <div class="color-option"><button class="color-field" data-color-key="titleColor" type="button"><span class="color-chip" id="titleColorSwatch" style="background:#111111"></span><span class="color-field-copy"><span class="color-field-label">見出しテキスト</span><span class="color-field-value" id="titleColorText">#111111</span></span></button><div class="inline-picker-host" data-color-host="titleColor"></div></div>
+  <div class="color-option"><button class="color-field" data-color-key="subtitleColor" type="button"><span class="color-chip" id="subtitleColorSwatch" style="background:#111111"></span><span class="color-field-copy"><span class="color-field-label">補足テキスト</span><span class="color-field-value" id="subtitleColorText">#111111</span></span></button><div class="inline-picker-host" data-color-host="subtitleColor"></div></div>
+</div></div>
+</div><div class="tuning-group color-section">
+<button class="tuning-head" type="button"><span class="tuning-label"><span class="tuning-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect height="12" rx="6" width="18" x="3" y="6"></rect><path d="M8 12h8"></path></svg></span>ポイント枠</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span></button>
+<div class="tuning-body"><div class="color-options">
+  <div class="color-option"><button class="color-field" data-color-key="pointBgColor" type="button"><span class="color-chip" id="pointBgColorSwatch" style="background:#ABED00"></span><span class="color-field-copy"><span class="color-field-label">ボックス</span><span class="color-field-value" id="pointBgColorText">#ABED00</span></span></button><div class="inline-picker-host" data-color-host="pointBgColor"></div></div>
+  <div class="color-option"><button class="color-field" data-color-key="pointTextColor" type="button"><span class="color-chip" id="pointTextColorSwatch" style="background:#111111"></span><span class="color-field-copy"><span class="color-field-label">テキスト</span><span class="color-field-value" id="pointTextColorText">#111111</span></span></button><div class="inline-picker-host" data-color-host="pointTextColor"></div></div>
+</div></div>
 </div><div class="tuning-group color-accordion" data-color-group="accentColor">
 <button class="tuning-head" data-color-accordion-key="accentColor" type="button"><span class="tuning-label"><span class="color-head-chip" id="accentColorSwatch" style="background:#ABED00"></span><span>強調</span><span class="color-head-value" id="accentColorText">#ABED00</span></span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span></button>
 <div class="tuning-body"><div class="inline-picker-host" data-color-host="accentColor"></div></div>
@@ -351,7 +361,7 @@ const DEFAULT_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5
 const defaults = {
   title:'', subtitle:'', subtitleVisible:true, pointText:'', pointVisible:true,
   titleSize:80, subtitleSize:48, pointSize:40, pointStyle:'box', background:'square', pointRadius:16, underlineVisible:true,
-  frameColor:'#ABED00', panelColor:'#F6F6F2', textColor:'#111111', accentColor:'#ABED00',
+  frameColor:'#ABED00', panelColor:'#F6F6F2', titleColor:'#111111', subtitleColor:'#111111', pointBgColor:'#ABED00', pointTextColor:'#111111', accentColor:'#ABED00',
   logoWidth:192, logoVisible:true, logoKind:'default', logoData:null
 };
 let state = {...defaults};
@@ -395,14 +405,18 @@ function saveColorPalette(){
 function setActiveColorKey(key){
   activeColorKey=key;
   $$('.color-accordion').forEach(el=>el.classList.toggle('active-color',el.dataset.colorGroup===key));
+  $$('[data-color-key]').forEach(el=>el.classList.toggle('active-color',el.dataset.colorKey===key));
+}
+function activateColorControl(key){
+  const host=$(`[data-color-host="${key}"]`),picker=$('#inlineColorPicker');if(!host)return;
+  if(picker&&picker.parentElement!==host)host.appendChild(picker);
+  setActiveColorKey(key);syncColorPickerUI();
 }
 function activateColorAccordion(key,forceOpen=true){
   const group=$(`[data-color-group="${key}"]`);if(!group)return;
   $$('.color-accordion').forEach(g=>{if(g!==group)g.classList.remove('open')});
   if(forceOpen)group.classList.add('open');
-  const host=group.querySelector('.inline-picker-host'),picker=$('#inlineColorPicker');
-  if(host&&picker&&picker.parentElement!==host)host.appendChild(picker);
-  setActiveColorKey(key);syncColorPickerUI();
+  activateColorControl(key);
 }
 function addSavedColor(rawColor){
   const color=normalizeHex(rawColor);
@@ -444,7 +458,7 @@ function rgbToHex(r,g,b){const h=n=>Number(n).toString(16).padStart(2,'0').toUpp
 function rgbToHsv(r,g,b){r/=255;g/=255;b/=255;const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;let h=0;if(d){if(max===r)h=((g-b)/d)%6;else if(max===g)h=(b-r)/d+2;else h=(r-g)/d+4;h*=60;if(h<0)h+=360}return {h,s:max===0?0:d/max,v:max}}
 function hsvToRgb(h,s,v){const c=v*s,x=c*(1-Math.abs((h/60)%2-1)),m=v-c;let r=0,g=0,b=0;if(h<60){r=c;g=x}else if(h<120){r=x;g=c}else if(h<180){g=c;b=x}else if(h<240){g=x;b=c}else if(h<300){r=x;b=c}else{r=c;b=x}return {r:Math.round((r+m)*255),g:Math.round((g+m)*255),b:Math.round((b+m)*255)}}
 function hueColor(h){const rgb=hsvToRgb((h+360)%360,1,1);return rgbToHex(rgb.r,rgb.g,rgb.b)}
-function syncColorPickerUI(){const color=normalizeHex(state[activeColorKey]||'#ABED00');const meta={frameColor:'外枠',panelColor:'メインエリア',textColor:'テキスト',accentColor:'強調'};const prev=$('#pickerPreview');if(prev)prev.style.background=color;const hex=$('#pickerHex');if(hex&&document.activeElement!==hex)hex.value=color;const rgb=hexToRgb(color);pickerHSV=rgbToHsv(rgb.r,rgb.g,rgb.b);[['R',rgb.r],['G',rgb.g],['B',rgb.b]].forEach(([k,val])=>{const r=$('#picker'+k),n=$('#picker'+k+'Num');if(r)r.value=val;if(n&&document.activeElement!==n)n.value=val});const sv=$('#pickerSV'),svt=$('#pickerSVThumb'),hue=$('#pickerHueThumb');if(sv)sv.style.setProperty('--picker-hue',hueColor(pickerHSV.h));if(svt){svt.style.left=(pickerHSV.s*100)+'%';svt.style.top=((1-pickerHSV.v)*100)+'%'}if(hue)hue.style.top=(pickerHSV.h/360*100)+'%';const empty=$('#pickerPaletteEmpty');if(empty)empty.hidden=savedColors.length>0}
+function syncColorPickerUI(){const color=normalizeHex(state[activeColorKey]||'#ABED00');const meta={frameColor:'外枠',panelColor:'メインエリア',titleColor:'見出しテキスト',subtitleColor:'補足テキスト',pointBgColor:'ポイント枠ボックス',pointTextColor:'ポイント枠テキスト',accentColor:'強調'};const prev=$('#pickerPreview');if(prev)prev.style.background=color;const hex=$('#pickerHex');if(hex&&document.activeElement!==hex)hex.value=color;const rgb=hexToRgb(color);pickerHSV=rgbToHsv(rgb.r,rgb.g,rgb.b);[['R',rgb.r],['G',rgb.g],['B',rgb.b]].forEach(([k,val])=>{const r=$('#picker'+k),n=$('#picker'+k+'Num');if(r)r.value=val;if(n&&document.activeElement!==n)n.value=val});const sv=$('#pickerSV'),svt=$('#pickerSVThumb'),hue=$('#pickerHueThumb');if(sv)sv.style.setProperty('--picker-hue',hueColor(pickerHSV.h));if(svt){svt.style.left=(pickerHSV.s*100)+'%';svt.style.top=((1-pickerHSV.v)*100)+'%'}if(hue)hue.style.top=(pickerHSV.h/360*100)+'%';const empty=$('#pickerPaletteEmpty');if(empty)empty.hidden=savedColors.length>0}
 function applyPickerColor(color){color=normalizeHex(color);if(!/^#[0-9A-F]{6}$/.test(color))return;state[activeColorKey]=color;syncControls();reflow();syncColorPickerUI()}
 function applyHSV(h,s,v){pickerHSV={h:(h+360)%360,s:clamp(0,s,1),v:clamp(0,v,1)};const rgb=hsvToRgb(pickerHSV.h,pickerHSV.s,pickerHSV.v);applyPickerColor(rgbToHex(rgb.r,rgb.g,rgb.b))}
 function beginColorInteraction(){if(!colorInteractionSnap)colorInteractionSnap=snapshotState()}
@@ -491,7 +505,7 @@ function lines(text){ const a=String(text||'').split(/\r?\n/); return a.length?a
 function renderLogo(){
   const zone=$('#logoZone'), wrap=$('#logoWrap');
   zone.hidden=!state.logoVisible;
-  wrap.style.width=state.logoWidth+'px'; wrap.style.color=state.textColor;
+  wrap.style.width=state.logoWidth+'px'; wrap.style.color='#111111';
   if(!state.logoVisible){ wrap.innerHTML=''; updateOpticalLayout(); return; }
   if(state.logoKind==='custom'&&state.logoData){wrap.innerHTML=`<img alt="logo" src="${state.logoData}">`;}
   else {wrap.innerHTML=DEFAULT_LOGO_SVG;}
@@ -553,13 +567,13 @@ function renderTextLines(){
   $('#pointText').textContent=pointDisplay; const pointEl=$('#pointLabel'); pointEl.hidden=!state.pointVisible; pointEl.dataset.style=state.pointStyle;
 }
 function applyVisualState(){
-  const stage=$('#stage'); stage.style.background=state.frameColor; stage.style.color=state.textColor;
+  const stage=$('#stage'); stage.style.background=state.frameColor; stage.style.color=state.titleColor;
   $('#bgSquare').style.background=state.panelColor; $('#bgSquare').style.borderRadius='32px'; $('#bgSquare').hidden=state.background!=='square';
   $('#bgCircleFill').style.background=state.panelColor; $('#bgCircleOutline').style.borderColor=state.panelColor; $('#bgCircleOutline').style.borderWidth='8px';
   $('#bgCircleFill').hidden=state.background!=='circle'; $('#bgCircleOutline').hidden=state.background!=='circle';
-  $('.title-lines').style.color=state.textColor; $('.subtitle-lines').style.color=state.textColor;
+  $('.title-lines').style.color=state.titleColor; $('.subtitle-lines').style.color=state.subtitleColor;
   $$('.title-underline').forEach(el=>{el.style.background=state.accentColor;el.hidden=!state.underlineVisible});
-  const point=$('#pointLabel'); point.style.background='#ABED00'; point.style.color=state.textColor; point.style.setProperty('--point-radius',state.pointRadius+'px'); point.dataset.style=state.pointStyle;
+  const point=$('#pointLabel'); point.style.background=state.pointBgColor; point.style.color=state.pointTextColor; point.style.setProperty('--point-radius',state.pointRadius+'px'); point.dataset.style=state.pointStyle;
   renderLogo();
 }
 function setMetricVars(m){
@@ -598,7 +612,7 @@ function syncControls(){
   map.forEach(([id,k])=>{const el=$('#'+id);if(el&&document.activeElement!==el)el.value=state[k]});
   const nums=[['titleSize',state.titleSize],['subtitleSize',state.subtitleSize],['pointSize',state.pointSize],['pointRadius',state.pointRadius],['logoSize',state.logoWidth]];
   nums.forEach(([id,v])=>{const el=$('#'+id),num=$('#'+id+'Num');if(el)el.value=v;if(num&&document.activeElement!==num)num.value=v});
-  [['frameColor','frameColor'],['panelColor','panelColor'],['textColor','textColor'],['accentColor','accentColor']].forEach(([id,k])=>{const txt=$('#'+id+'Text'),sw=$('#'+id+'Swatch');if(sw)sw.style.background=state[k];if(txt)txt.textContent=state[k].toUpperCase()}); if($('#inlineColorPicker'))syncColorPickerUI();
+  [['frameColor','frameColor'],['panelColor','panelColor'],['titleColor','titleColor'],['subtitleColor','subtitleColor'],['pointBgColor','pointBgColor'],['pointTextColor','pointTextColor'],['accentColor','accentColor']].forEach(([id,k])=>{const txt=$('#'+id+'Text'),sw=$('#'+id+'Swatch');if(sw)sw.style.background=state[k];if(txt)txt.textContent=state[k].toUpperCase()}); if($('#inlineColorPicker'))syncColorPickerUI();
   setSwitch('#subtitleSwitch',state.subtitleVisible);setSwitch('#pointSwitch',state.pointVisible);setSwitch('#underlineSwitch',state.underlineVisible);setSwitch('#logoSwitch',state.logoVisible);
   $$('[data-bg]').forEach(b=>b.classList.toggle('active',b.dataset.bg===state.background));
   $$('[data-point-style]').forEach(b=>b.classList.toggle('active',b.dataset.pointStyle===state.pointStyle));
@@ -684,7 +698,7 @@ function drawDefaultLogoToCanvas(ctx,logoR){
   ctx.scale(scale,scale);
   doc.querySelectorAll('path,polygon').forEach(el=>{
     const isAccent=String(el.getAttribute('fill')||'').toUpperCase()==='#ABED00';
-    ctx.fillStyle=isAccent?'#ABED00':state.textColor;
+    ctx.fillStyle=isAccent?'#ABED00':'#111111';
     if(el.tagName.toLowerCase()==='path'){
       ctx.fill(new Path2D(el.getAttribute('d')||''));
     }else{
@@ -771,16 +785,16 @@ async function exportPng(){
       });
     }
 
-    drawTextElementsToCanvas(ctx,'.title-text',lastFit.title,700,.018,state.textColor);
-    if(state.subtitleVisible) drawTextElementsToCanvas(ctx,'.subtitle-text',lastFit.subtitle,600,.028,state.textColor);
+    drawTextElementsToCanvas(ctx,'.title-text',lastFit.title,700,.018,state.titleColor);
+    if(state.subtitleVisible) drawTextElementsToCanvas(ctx,'.subtitle-text',lastFit.subtitle,600,.028,state.subtitleColor);
 
     if(state.pointVisible){
       const r=stageUnits($('#pointLabel').getBoundingClientRect());
       const cx=r.x+r.w/2,cy=r.y+r.h/2;
       if(state.pointStyle==='bracket'){
-        drawTrackedText(ctx,`【${state.pointText||'ポイントテキスト'}】`,cx,cy,state.pointSize,800,.04,state.textColor);
+        drawTrackedText(ctx,`【${state.pointText||'ポイントテキスト'}】`,cx,cy,state.pointSize,800,.04,state.pointTextColor);
       }else{
-        ctx.fillStyle='#ABED00';
+        ctx.fillStyle=state.pointBgColor;
         canvasRoundRect(ctx,r.x,r.y,r.w,r.h,Math.min(state.pointRadius,r.h/2));
         ctx.fill();
         if(state.pointStyle==='speech'){
@@ -790,7 +804,7 @@ async function exportPng(){
           ctx.lineTo(r.x+r.w*.20,r.y+r.h+22);
           ctx.closePath();ctx.fill();
         }
-        drawTrackedText(ctx,state.pointText||'ポイントテキスト',cx,cy,state.pointSize,800,.04,state.textColor);
+        drawTrackedText(ctx,state.pointText||'ポイントテキスト',cx,cy,state.pointSize,800,.04,state.pointTextColor);
       }
     }
 
@@ -813,6 +827,7 @@ async function exportPng(){
 $$('.phase-tab,.mobile-tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
 $$('.tuning-head').forEach(h=>{if(h.dataset.colorAccordionKey)return;h.addEventListener('click',()=>h.parentElement.classList.toggle('open'))});
 $$('[data-color-accordion-key]').forEach(h=>h.addEventListener('click',()=>{const key=h.dataset.colorAccordionKey,group=h.closest('.color-accordion'),wasOpen=group.classList.contains('open');if(wasOpen){group.classList.remove('open')}else{activateColorAccordion(key,true)}}));
+$$('[data-color-key]').forEach(b=>b.addEventListener('click',()=>{const key=b.dataset.colorKey;$$('.color-accordion').forEach(g=>g.classList.remove('open'));activateColorControl(key)}));
 
 function bindTextHistory(id,key){
   const el=$('#'+id);let startSnap=null;
