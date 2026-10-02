@@ -316,17 +316,18 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;b
 <div class="tuning-body"><div class="color-options">
   <div class="color-option"><button class="color-field" data-color-key="titleColor" type="button"><span class="color-chip" id="titleColorSwatch" style="background:#111111"></span><span class="color-field-copy"><span class="color-field-label">見出しテキスト</span><span class="color-field-value" id="titleColorText">#111111</span></span></button><div class="inline-picker-host" data-color-host="titleColor"></div></div>
   <div class="color-option"><button class="color-field" data-color-key="subtitleColor" type="button"><span class="color-chip" id="subtitleColorSwatch" style="background:#111111"></span><span class="color-field-copy"><span class="color-field-label">補足テキスト</span><span class="color-field-value" id="subtitleColorText">#111111</span></span></button><div class="inline-picker-host" data-color-host="subtitleColor"></div></div>
+  <div class="color-option"><button class="color-field" data-color-key="pointTextColor" type="button"><span class="color-chip" id="pointTextColorSwatch" style="background:#111111"></span><span class="color-field-copy"><span class="color-field-label">ポイントテキスト</span><span class="color-field-value" id="pointTextColorText">#111111</span></span></button><div class="inline-picker-host" data-color-host="pointTextColor"></div></div>
 </div></div>
 </div><div class="tuning-group color-section">
 <button class="tuning-head" type="button"><span class="tuning-label"><span class="tuning-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect height="12" rx="6" width="18" x="3" y="6"></rect><path d="M8 12h8"></path></svg></span>ポイント枠</span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span></button>
 <div class="tuning-body"><div class="color-options">
-  <div class="color-option"><button class="color-field" data-color-key="pointBgColor" type="button"><span class="color-chip" id="pointBgColorSwatch" style="background:#ABED00"></span><span class="color-field-copy"><span class="color-field-label">ボックス</span><span class="color-field-value" id="pointBgColorText">#ABED00</span></span></button><div class="inline-picker-host" data-color-host="pointBgColor"></div></div>
-  <div class="color-option"><button class="color-field" data-color-key="pointTextColor" type="button"><span class="color-chip" id="pointTextColorSwatch" style="background:#111111"></span><span class="color-field-copy"><span class="color-field-label">テキスト</span><span class="color-field-value" id="pointTextColorText">#111111</span></span></button><div class="inline-picker-host" data-color-host="pointTextColor"></div></div>
+  <div class="color-option"><button class="color-field" data-color-key="pointBgColor" type="button"><span class="color-chip" id="pointBgColorSwatch" style="background:#ABED00"></span><span class="color-field-copy"><span class="color-field-label">色</span><span class="color-field-value" id="pointBgColorText">#ABED00</span></span></button><div class="inline-picker-host" data-color-host="pointBgColor"></div></div>
 </div></div>
 </div><div class="tuning-group color-accordion" data-color-group="accentColor">
-<button class="tuning-head" data-color-accordion-key="accentColor" type="button"><span class="tuning-label"><span class="color-head-chip" id="accentColorSwatch" style="background:#ABED00"></span><span>強調</span><span class="color-head-value" id="accentColorText">#ABED00</span></span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span></button>
+<button class="tuning-head" data-color-accordion-key="accentColor" type="button"><span class="tuning-label"><span class="color-head-chip" id="accentColorSwatch" style="background:#ABED00"></span><span>強調線</span><span class="color-head-value" id="accentColorText">#ABED00</span></span><span class="tuning-right"><span class="close-label">閉じる</span><span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span></button>
 <div class="tuning-body"><div class="inline-picker-host" data-color-host="accentColor"></div></div>
 </div>
+<div id="colorPickerParking" hidden></div>
 </section>
 <section class="tab-panel" data-panel="export">
 <div class="tuning-group open">
@@ -407,10 +408,21 @@ function setActiveColorKey(key){
   $$('.color-accordion').forEach(el=>el.classList.toggle('active-color',el.dataset.colorGroup===key));
   $$('[data-color-key]').forEach(el=>el.classList.toggle('active-color',el.dataset.colorKey===key));
 }
+function closeColorControl(){
+  const picker=$('#inlineColorPicker'),parking=$('#colorPickerParking');
+  if(picker&&parking&&picker.parentElement!==parking)parking.appendChild(picker);
+  $$('[data-color-key]').forEach(el=>el.classList.remove('active-color'));
+}
 function activateColorControl(key){
   const host=$(`[data-color-host="${key}"]`),picker=$('#inlineColorPicker');if(!host)return;
   if(picker&&picker.parentElement!==host)host.appendChild(picker);
   setActiveColorKey(key);syncColorPickerUI();
+}
+function toggleColorControl(key){
+  const host=$(`[data-color-host="${key}"]`),picker=$('#inlineColorPicker');if(!host||!picker)return;
+  const isOpen=picker.parentElement===host;
+  if(isOpen){closeColorControl();return;}
+  activateColorControl(key);
 }
 function activateColorAccordion(key,forceOpen=true){
   const group=$(`[data-color-group="${key}"]`);if(!group)return;
@@ -458,7 +470,7 @@ function rgbToHex(r,g,b){const h=n=>Number(n).toString(16).padStart(2,'0').toUpp
 function rgbToHsv(r,g,b){r/=255;g/=255;b/=255;const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;let h=0;if(d){if(max===r)h=((g-b)/d)%6;else if(max===g)h=(b-r)/d+2;else h=(r-g)/d+4;h*=60;if(h<0)h+=360}return {h,s:max===0?0:d/max,v:max}}
 function hsvToRgb(h,s,v){const c=v*s,x=c*(1-Math.abs((h/60)%2-1)),m=v-c;let r=0,g=0,b=0;if(h<60){r=c;g=x}else if(h<120){r=x;g=c}else if(h<180){g=c;b=x}else if(h<240){g=x;b=c}else if(h<300){r=x;b=c}else{r=c;b=x}return {r:Math.round((r+m)*255),g:Math.round((g+m)*255),b:Math.round((b+m)*255)}}
 function hueColor(h){const rgb=hsvToRgb((h+360)%360,1,1);return rgbToHex(rgb.r,rgb.g,rgb.b)}
-function syncColorPickerUI(){const color=normalizeHex(state[activeColorKey]||'#ABED00');const meta={frameColor:'外枠',panelColor:'メインエリア',titleColor:'見出しテキスト',subtitleColor:'補足テキスト',pointBgColor:'ポイント枠ボックス',pointTextColor:'ポイント枠テキスト',accentColor:'強調'};const prev=$('#pickerPreview');if(prev)prev.style.background=color;const hex=$('#pickerHex');if(hex&&document.activeElement!==hex)hex.value=color;const rgb=hexToRgb(color);pickerHSV=rgbToHsv(rgb.r,rgb.g,rgb.b);[['R',rgb.r],['G',rgb.g],['B',rgb.b]].forEach(([k,val])=>{const r=$('#picker'+k),n=$('#picker'+k+'Num');if(r)r.value=val;if(n&&document.activeElement!==n)n.value=val});const sv=$('#pickerSV'),svt=$('#pickerSVThumb'),hue=$('#pickerHueThumb');if(sv)sv.style.setProperty('--picker-hue',hueColor(pickerHSV.h));if(svt){svt.style.left=(pickerHSV.s*100)+'%';svt.style.top=((1-pickerHSV.v)*100)+'%'}if(hue)hue.style.top=(pickerHSV.h/360*100)+'%';const empty=$('#pickerPaletteEmpty');if(empty)empty.hidden=savedColors.length>0}
+function syncColorPickerUI(){const color=normalizeHex(state[activeColorKey]||'#ABED00');const meta={frameColor:'外枠',panelColor:'メインエリア',titleColor:'見出しテキスト',subtitleColor:'補足テキスト',pointBgColor:'ポイント枠ボックス',pointTextColor:'ポイントテキスト',accentColor:'強調線'};const prev=$('#pickerPreview');if(prev)prev.style.background=color;const hex=$('#pickerHex');if(hex&&document.activeElement!==hex)hex.value=color;const rgb=hexToRgb(color);pickerHSV=rgbToHsv(rgb.r,rgb.g,rgb.b);[['R',rgb.r],['G',rgb.g],['B',rgb.b]].forEach(([k,val])=>{const r=$('#picker'+k),n=$('#picker'+k+'Num');if(r)r.value=val;if(n&&document.activeElement!==n)n.value=val});const sv=$('#pickerSV'),svt=$('#pickerSVThumb'),hue=$('#pickerHueThumb');if(sv)sv.style.setProperty('--picker-hue',hueColor(pickerHSV.h));if(svt){svt.style.left=(pickerHSV.s*100)+'%';svt.style.top=((1-pickerHSV.v)*100)+'%'}if(hue)hue.style.top=(pickerHSV.h/360*100)+'%';const empty=$('#pickerPaletteEmpty');if(empty)empty.hidden=savedColors.length>0}
 function applyPickerColor(color){color=normalizeHex(color);if(!/^#[0-9A-F]{6}$/.test(color))return;state[activeColorKey]=color;syncControls();reflow();syncColorPickerUI()}
 function applyHSV(h,s,v){pickerHSV={h:(h+360)%360,s:clamp(0,s,1),v:clamp(0,v,1)};const rgb=hsvToRgb(pickerHSV.h,pickerHSV.s,pickerHSV.v);applyPickerColor(rgbToHex(rgb.r,rgb.g,rgb.b))}
 function beginColorInteraction(){if(!colorInteractionSnap)colorInteractionSnap=snapshotState()}
@@ -825,9 +837,9 @@ async function exportPng(){
 
 // Events
 $$('.phase-tab,.mobile-tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
-$$('.tuning-head').forEach(h=>{if(h.dataset.colorAccordionKey)return;h.addEventListener('click',()=>h.parentElement.classList.toggle('open'))});
+$$('.tuning-head').forEach(h=>{if(h.dataset.colorAccordionKey)return;h.addEventListener('click',()=>{const group=h.parentElement;const willClose=group.classList.contains('open');group.classList.toggle('open');if(willClose&&group.classList.contains('color-section')&&group.querySelector('#inlineColorPicker'))closeColorControl()})});
 $$('[data-color-accordion-key]').forEach(h=>h.addEventListener('click',()=>{const key=h.dataset.colorAccordionKey,group=h.closest('.color-accordion'),wasOpen=group.classList.contains('open');if(wasOpen){group.classList.remove('open')}else{activateColorAccordion(key,true)}}));
-$$('[data-color-key]').forEach(b=>b.addEventListener('click',()=>{const key=b.dataset.colorKey;$$('.color-accordion').forEach(g=>g.classList.remove('open'));activateColorControl(key)}));
+$$('[data-color-key]').forEach(b=>b.addEventListener('click',()=>{const key=b.dataset.colorKey;$$('.color-accordion').forEach(g=>g.classList.remove('open'));toggleColorControl(key)}));
 
 function bindTextHistory(id,key){
   const el=$('#'+id);let startSnap=null;
